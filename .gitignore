@@ -8,4 +8,15 @@ wheels/
 
 # Virtual environments
 .venv
-docs/
+# Local assignment input; project documentation stays trackable
+docs/Groups_3_5_Cinema.pdf
+
+# Operating-system files, secrets and tool caches
+.DS_Store
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
