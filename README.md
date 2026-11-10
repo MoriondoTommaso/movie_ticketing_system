@@ -8,6 +8,7 @@ purchases, screening management, and SQL reports.
 - [Specification](plan/SPEC.md)
 - [Implementation plan](tasks/plan.md)
 - [Team assignments and reviews](tasks/assignments.md)
+- [Git workflow and pull request guide](docs/git-workflow.md)
 - [Task ledger](tasks/todo.md)
 - [GitHub issues](tasks/github-issues.md)
 
