@@ -3,8 +3,8 @@
 > Current execution authority: [implementation plan](../tasks/plan.md) and
 > [named assignments](../tasks/assignments.md), which supersede provisional A–E
 > staffing and review pairs in this original roadmap.
-> The 12 November sequential B01–B09 handoff schedule also supersedes this
-> roadmap's parallelization strategy. Only one implementation block is active.
+> Use the current [parallel-work protocol](../tasks/parallel-work.md) for readiness
+> and file reservations. It replaces the intermediate sequential B01–B09 policy.
 
 **Status:** Draft for explicit approval alongside `SPEC.md`.
 **Planning target:** 23 November 2026, tentative; no effort or calendar commitments assumed.

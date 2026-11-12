@@ -47,12 +47,12 @@ Letters remain provisional. Feature owners submit their own tests and notes; sha
 
 ## Ordered bundles and dependency graph
 
-**Execution update, 12 November 2026:** follow B01–B09 in
-[`assignments.md`](assignments.md#sequential-blocks-and-handoffs), with one active
-implementation block across the team and a reviewed, merged handoff before the
-next owner starts. This supersedes parallel execution and the default merge-window
-ordering below. The dependency graph and all acceptance/verification requirements
-remain binding. Checkpoint timing is explicitly mapped in the block table.
+**Execution update, 12 November 2026:** follow the named lanes in
+[`assignments.md`](assignments.md) and the [parallel-work protocol](parallel-work.md).
+One implementation task per person can run concurrently with other ready lanes.
+This replaces the sequential B01–B09 policy. Start from merged prerequisites;
+checkpoint windows are integration gates, not global start barriers. Shared-file
+reservations and isolated verification targets prevent avoidable conflicts.
 
 The canonical ledger is `tasks/todo.md`; every task and checkpoint starts TODO. Sizes: XS = one bounded document/check; S = one small component or review; M = one feature slice or substantial environment-verification session. Typical implementation file counts are S = 1–2 and M = 3–5, but coordination/test effort also determines size. Split a task before implementation if it exceeds five substantive files or one focused session. Routine ledger status/evidence notes are bookkeeping, not additional feature scope. DONE means all acceptance criteria and listed verification have passed; implementation-only progress cannot be marked DONE. Cross-feature checks with later prerequisites belong to named checkpoints or later tasks, not deferred acceptance on an earlier task.
 
@@ -93,7 +93,7 @@ T26 + T27 -> T30
 T28 + T29 + T30 -> C10
 ```
 
-The high-risk path is contracts/runtime/schema → payment validation/search lookup → atomic booking → rollback/last-seat proof → delivery. After contract agreement, C can implement T05/T12 while A handles runtime/schema; B can implement T07 after T04; E can develop seeds/reports while D develops booking. T22 and T23 can start immediately after their prerequisites rather than waiting for reporting. Serialize tasks that touch the same file unless the primary editor integrates them. All real-MySQL feature verification waits for the isolated database foundation; mocks cannot satisfy that gate.
+The high-risk path is contracts/runtime/schema → payment validation/search lookup → atomic booking → rollback/last-seat proof → delivery. After T02, Bianca implements T05 and Eleonora T12 while Tommaso handles T03/T04. Alessandro starts T07 after T04; Eleonora handles T06/T08 as their prerequisites land. Then Alessandro's payments, Deniz's reports and Tommaso's screening/booking work can overlap. T22 and T23 need not wait for reporting. Serialize edits to shared files, not whole lanes. All real-MySQL feature verification waits for the isolated database foundation; mocks cannot satisfy that gate.
 
 Run a cross-lane checkpoint after every two or three completed tasks even when the team reorders ready tasks. C01–C10 are the default sequence; an out-of-order checkpoint must list the actual task IDs and run their focused commands plus the applicable broad checks. From C02 onward, use `python -m pytest -q` to include every delivered scope, including race tests delivered early. On failure, mark the checkpoint BLOCKED and stop dependent integration; name an owner to fix forward or revert the failing change, rerun affected checks plus the checkpoint suite, and record the reviewing student's release of the checkpoint. Human contract/schema changes require affected-owner agreement under SPEC §11.
 

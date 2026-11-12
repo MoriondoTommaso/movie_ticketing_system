@@ -1,15 +1,16 @@
 # GitHub issue index
 
-**Execution order (12 November):** use [blocks B01–B09](assignments.md#sequential-blocks-and-handoffs).
-The windows below are an issue-number lookup, not parallel work queues. Each
-issue records its block, owner and handoff condition. Deniz's reserved block is
-B06: issues #18, #23, #25, #26, #27 and #31.
+**Execution policy (12 November):** use [parallel lanes](parallel-work.md).
+The windows below are an issue-number lookup and checkpoint grouping, not a
+global serial queue. Each issue records its lane, owner and prerequisite gate.
+Deniz's reserved issues are #25, #26, #27 and #31.
 
-Filter GitHub issues by `block:B01` through `block:B09` to see each handoff batch.
-Start with [B01 — Tommaso's foundation](https://github.com/MoriondoTommaso/movie_ticketing_system/issues?q=is%3Aissue%20is%3Aopen%20label%3Ablock%3AB01).
+Filter by `lane:core`, `lane:integration`, `lane:identity`, `lane:analytics` or
+`lane:rules-docs`. Lane labels identify responsibility, not readiness. Tommaso
+starts T01 (#1); the parallel-work guide explains the first branches after T02.
 
 **Current ownership:** [Named assignments](assignments.md) supersede the original
-unassigned/provisional state described below. Deniz's six issues are reserved in
+unassigned/provisional state described below. Deniz's four issues are reserved in
 their bodies pending invitation acceptance; other primary owners are assigned.
 
 Published the approved ledger to [MoriondoTommaso/movie_ticketing_system](https://github.com/MoriondoTommaso/movie_ticketing_system/issues): 30 implementation tasks and 10 checkpoints, all initially open/TODO. Each issue includes the full task bundle, verification command contract, and linked prerequisites. Owner/reviewer letters remain provisional; no GitHub assignees were inferred.

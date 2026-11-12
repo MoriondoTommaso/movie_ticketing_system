@@ -4,12 +4,11 @@ Use this workflow for implementation tasks in this repository:
 
 **Issue → branch → changes and checks → commits → push → pull request → review → merge.**
 
-**Team execution rule:** follow the [sequential blocks B01–B09](../tasks/assignments.md#sequential-blocks-and-handoffs).
-Only one implementation block is active across the team. Work through the current
-owner's block using small task PRs; the next owner waits until all block tasks and
-due checkpoints pass, PRs are reviewed and merged, and the final task issue records
-the handoff. Review/pairing can support the current owner without starting a later
-block. Task numbers alone do not determine execution order.
+**Team execution rule:** follow the [parallel-work protocol](../tasks/parallel-work.md).
+Keep one active implementation task per person. Independent lanes can run together
+once their own prerequisites are verified and merged. Reserve shared-file edits
+with the integrator; hand off dependency contracts at each merge. Task numbers and
+lane labels alone do not determine readiness.
 
 ## 1. What each part means
 
@@ -49,8 +48,8 @@ The `gh` commands below are optional: all PR actions also work on the website.
 ## 3. Start one assigned task
 
 Read your issue, its prerequisites and the [assignment plan](../tasks/assignments.md).
-Start only when your block is active and the previous owner has handed it over,
-as well as when the required contracts/dependencies are ready. Coordinate edits
+Start when your task's required contracts/dependencies are verified and merged.
+Do not wait for another person's whole lane to finish. Coordinate edits
 to shared files with their integrator before coding.
 
 Check that your working tree is clean, update `main`, then create a branch:
@@ -138,8 +137,9 @@ gh pr create --base main --head feat/t05-ticket-pricing --web
 
 ## 6. Request review and respond
 
-- **Alessandro, Deniz, Bianca and Eleonora:** request `MoriondoTommaso`.
-- **Tommaso:** request `eleonoraraimondo-hub`; do not approve your own work.
+- **Alessandro, Deniz and Eleonora:** request `MoriondoTommaso`.
+- **Tommaso and Bianca:** request `eleonoraraimondo-hub`.
+- Do not approve your own work.
 - Eleonora also helps Tommaso prepare evidence and triage reviews.
 
 Select the reviewer in the PR sidebar. If reviewer assignment is unavailable,
@@ -204,7 +204,8 @@ Before merging, confirm:
   and acceptance checkboxes in `tasks/todo.md`. Review approval completes that
   status update; merging the PR publishes it alongside the implementation.
 
-Tommaso normally merges reviewed PRs. Eleonora reviews Tommaso's PRs before merge.
+Tommaso or Eleonora can merge reviewed PRs after required checks pass. Neither
+self-approves; use the review routing above, including shared-file reviews.
 Choose **Squash and merge** when available to keep one task-level commit on
 `main`; retain the task ID in its title. Delete the merged remote branch using
 GitHub's **Delete branch** button. These are team conventions, not a claim that
@@ -231,7 +232,7 @@ complete its checkpoint: C01–C10 require their own integration evidence.
 
 ## Quick daily checklist
 
-1. Confirm your block is active, acknowledge the handoff, and check dependencies.
+1. Pick your next ready task, check merged dependencies, and reserve shared files.
 2. Update `main`; create a focused task branch.
 3. Implement, test, inspect changes, commit and push.
 4. Open a linked PR and request the named reviewer.

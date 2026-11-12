@@ -1,8 +1,9 @@
 # Implementation ledger — Movie Ticketing System
 
-**Execution order:** follow [sequential blocks B01–B09](assignments.md#sequential-blocks-and-handoffs),
-not task-number order. Only one block is active; the next owner waits for the
-reviewed/merged handoff. Task and checkpoint acceptance criteria remain binding.
+**Execution order:** follow [parallel readiness and handoffs](parallel-work.md),
+not task-number order. Each owner can start a task once its prerequisites are
+verified and merged. Keep one active task per person and reserve shared-file edits.
+Task and checkpoint acceptance criteria remain binding.
 
 **Ownership authority:** [Named assignments](assignments.md) supersede provisional
 A–E owner/reviewer/coordination references below. Bianca handles the T01/T29
