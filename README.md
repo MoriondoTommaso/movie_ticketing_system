@@ -18,5 +18,7 @@ instructions. T02 establishes the environment; T27 completes the handover guide.
 
 Use short-lived branches and PRs linked to issues, with acceptance evidence and
 the reviewer listed in the assignment plan. Keep issue and ledger status aligned.
+Work through sequential ownership blocks B01–B09: the next team member starts
+only after the current block is reviewed, merged and handed over.
 Use synthetic data; keep local credentials in ignored `.env` files. Intentional
 `docs/` artifacts are tracked; the local assignment PDF is excluded.

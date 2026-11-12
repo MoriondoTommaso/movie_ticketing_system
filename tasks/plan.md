@@ -47,6 +47,13 @@ Letters remain provisional. Feature owners submit their own tests and notes; sha
 
 ## Ordered bundles and dependency graph
 
+**Execution update, 12 November 2026:** follow B01–B09 in
+[`assignments.md`](assignments.md#sequential-blocks-and-handoffs), with one active
+implementation block across the team and a reviewed, merged handoff before the
+next owner starts. This supersedes parallel execution and the default merge-window
+ordering below. The dependency graph and all acceptance/verification requirements
+remain binding. Checkpoint timing is explicitly mapped in the block table.
+
 The canonical ledger is `tasks/todo.md`; every task and checkpoint starts TODO. Sizes: XS = one bounded document/check; S = one small component or review; M = one feature slice or substantial environment-verification session. Typical implementation file counts are S = 1–2 and M = 3–5, but coordination/test effort also determines size. Split a task before implementation if it exceeds five substantive files or one focused session. Routine ledger status/evidence notes are bookkeeping, not additional feature scope. DONE means all acceptance criteria and listed verification have passed; implementation-only progress cannot be marked DONE. Cross-feature checks with later prerequisites belong to named checkpoints or later tasks, not deferred acceptance on an earlier task.
 
 | Merge window | Tasks | Checkpoint |

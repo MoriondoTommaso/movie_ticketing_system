@@ -1,5 +1,13 @@
 # GitHub issue index
 
+**Execution order (12 November):** use [blocks B01–B09](assignments.md#sequential-blocks-and-handoffs).
+The windows below are an issue-number lookup, not parallel work queues. Each
+issue records its block, owner and handoff condition. Deniz's reserved block is
+B06: issues #18, #23, #25, #26, #27 and #31.
+
+Filter GitHub issues by `block:B01` through `block:B09` to see each handoff batch.
+Start with [B01 — Tommaso's foundation](https://github.com/MoriondoTommaso/movie_ticketing_system/issues?q=is%3Aissue%20is%3Aopen%20label%3Ablock%3AB01).
+
 **Current ownership:** [Named assignments](assignments.md) supersede the original
 unassigned/provisional state described below. Deniz's six issues are reserved in
 their bodies pending invitation acceptance; other primary owners are assigned.

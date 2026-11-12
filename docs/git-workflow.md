@@ -4,6 +4,13 @@ Use this workflow for implementation tasks in this repository:
 
 **Issue → branch → changes and checks → commits → push → pull request → review → merge.**
 
+**Team execution rule:** follow the [sequential blocks B01–B09](../tasks/assignments.md#sequential-blocks-and-handoffs).
+Only one implementation block is active across the team. Work through the current
+owner's block using small task PRs; the next owner waits until all block tasks and
+due checkpoints pass, PRs are reviewed and merged, and the final task issue records
+the handoff. Review/pairing can support the current owner without starting a later
+block. Task numbers alone do not determine execution order.
+
 ## 1. What each part means
 
 | Term | Meaning |
@@ -42,7 +49,8 @@ The `gh` commands below are optional: all PR actions also work on the website.
 ## 3. Start one assigned task
 
 Read your issue, its prerequisites and the [assignment plan](../tasks/assignments.md).
-Start only when the required contracts/dependencies are ready. Coordinate edits
+Start only when your block is active and the previous owner has handed it over,
+as well as when the required contracts/dependencies are ready. Coordinate edits
 to shared files with their integrator before coding.
 
 Check that your working tree is clean, update `main`, then create a branch:
@@ -223,7 +231,7 @@ complete its checkpoint: C01–C10 require their own integration evidence.
 
 ## Quick daily checklist
 
-1. Read the assigned issue and check dependencies.
+1. Confirm your block is active, acknowledge the handoff, and check dependencies.
 2. Update `main`; create a focused task branch.
 3. Implement, test, inspect changes, commit and push.
 4. Open a linked PR and request the named reviewer.
