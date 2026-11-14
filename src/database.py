@@ -2,12 +2,15 @@
 
 import os
 import re
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
+import mysql.connector
 from dotenv import dotenv_values
+from mysql.connector.abstracts import MySQLConnectionAbstract
 
 Target = Literal["dev", "test"]
 
@@ -18,6 +21,10 @@ class CinemaError(Exception):
 
 class ValidationError(CinemaError):
     """Invalid configuration or application input."""
+
+
+class DatabaseError(CinemaError):
+    """A database operation failed; do not expose driver details to users."""
 
 
 @dataclass(frozen=True)
@@ -57,3 +64,44 @@ def settings_from_env(
     return DatabaseSettings(
         values["HOST"], port, values["NAME"], values["USER"], values["PASSWORD"]
     )
+
+
+def _connect(settings: DatabaseSettings) -> MySQLConnectionAbstract:
+    """Open exactly this settings snapshot; used by the guarded test lifecycle."""
+    conn = None
+    try:
+        conn = mysql.connector.connect(
+            host=settings.host,
+            port=settings.port,
+            database=settings.name,
+            user=settings.user,
+            password=settings.password,
+            autocommit=False,
+            charset="utf8mb4",
+            connection_timeout=5,
+        )
+        with conn.cursor() as cursor:
+            cursor.execute("SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ")
+        return conn
+    except mysql.connector.Error as exc:
+        if conn is not None:
+            conn.close()
+        raise DatabaseError("Database connection failed") from exc
+
+
+def connect(*, target: Target = "dev") -> MySQLConnectionAbstract:
+    """Return a new connection; caller commits/rolls back and closes resources."""
+    return _connect(settings_from_env(target=target))
+
+
+@contextmanager
+def connection(*, target: Target = "dev") -> Iterator[MySQLConnectionAbstract]:
+    """Optional closing scope: never commit; roll back pending work on exit."""
+    conn = connect(target=target)
+    try:
+        yield conn
+    finally:
+        try:
+            conn.rollback()
+        finally:
+            conn.close()

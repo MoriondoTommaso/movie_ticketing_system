@@ -112,20 +112,53 @@ This supersedes the pending-review/merge notes above. T02 is DONE; its dependent
 tasks may start when their other prerequisites are met. No next task started here.
 
 ## T03 — Make connections and isolated database tests usable
-- [ ] **IN PROGRESS · M · Owner Tommaso, Eleonora fixture review · Reviewer Eleonora · Depends: T02 · SC2, SC8**
+- [ ] **IN REVIEW · M · Owner Tommaso, Eleonora fixture review · Reviewer Eleonora · Depends: T02 · SC2, SC8**
 
 **Files:** `src/database.py`, `tests/conftest.py`, `tests/integration/test_database.py`.
 
 **Acceptance:**
-- [ ] Connection factory uses explicit dev/test settings, separate connections, documented closing responsibility, and no hidden commit for caller-owned work; actual isolation is checked as REPEATABLE READ.
-- [ ] Test reset validates the complete configured target before destructive operations, refuses development identity/unsafe settings, and uses an account unable to modify development data. Missing MySQL fails required integration runs rather than silently skipping them.
-- [ ] Unseeded connection fixtures work now; later schema/seed fixtures have explicit opt-in lifecycle and reset only the test database. Verify connection independence, transaction rollback, resource cleanup and target refusal with a disposable probe table.
+- [x] Connection factory uses explicit dev/test settings, separate connections, documented closing responsibility, and no hidden commit for caller-owned work; actual isolation is checked as REPEATABLE READ.
+- [x] Test reset validates the complete configured target before destructive operations, refuses development identity/unsafe settings, and uses an account unable to modify development data. Missing MySQL fails required integration runs rather than silently skipping them.
+- [x] Unseeded connection fixtures work now; later schema/seed fixtures have explicit opt-in lifecycle and reset only the test database. Verify connection independence, transaction rollback, resource cleanup and target refusal with a disposable probe table.
 
 **Verification:** `python -m pytest tests/integration/test_database.py -q`; Ruff on these three files. Guard tests must demonstrate no destructive statement was issued for a rejected target; use fake settings/call capture for that negative case, not a destructive experiment on development data.
 
-**Progress — 14 November 2026:** T02 is merged and DONE. First slice: settings
-tests failed on the missing database module, then passed (12 offline cases).
-No real-MySQL or destructive-reset evidence claimed yet.
+**T03 evidence — 14 November 2026 (SC2, SC8):**
+- T02 merged and DONE; settings slice commit `4fd4fc3`. RED: missing database
+  module; GREEN: 12 offline configuration cases. Subsequent RED runs identified
+  missing reset/connection functions and fixtures; all now implemented.
+- Scope: database settings/factory/closing context, opt-in test lifecycle,
+  focused tests and this ledger. No schema, seed, authentication or menu work.
+- Complete test settings never fall back to development. Reset requires a local
+  loopback target, distinct published port/name/user/password, a test-prefixed
+  or test-suffixed schema name and a non-root user. It freezes those settings,
+  checks connected database/user and database-only grants, then drops only that
+  test schema's base tables. Rejected settings make zero connections; rejected
+  server identity/grants make no destructive statements. Guard negatives use
+  fakes, never destructive experiments against development.
+- `db_factory`/`db_connection` do not reset or seed; `empty_database` is explicit
+  destructive opt-in for later schema/seed fixtures. Fixture/context cleanup
+  rolls back pending work and closes connections; no implicit commit.
+- Live target: Compose project `db-project-t03-20261114`, `--env-file .env.example`,
+  shell overrides `DB_PORT=23316 TEST_DB_PORT=23317`; both services healthy after
+  `--profile test up -d --wait --wait-timeout 180 db test-db`.
+  Pytest subprocess environment = process env plus dotenv_values(.env.example)
+  plus those two port overrides; no .env overwritten.
+- PASS: `python -m pytest tests/integration/test_database.py -q` and
+  `python -m pytest -q`: **43 passed, zero skipped**, real MySQL 8.4.13.
+  Includes independent connection IDs, actual REPEATABLE-READ, visibility before
+  commit, rollback, success/error cleanup, cleanup after failed rollback/drop,
+  explicit guarded reset and test-user development access denied (1044).
+- Availability proof: stopped only isolated test-db, ran the independent-
+  connection test and observed one DatabaseError failure (not skip/fallback);
+  restarted test-db and reran the complete suite green before commit.
+- PASS: `python -m pip check`, `docker compose --profile test config --quiet`,
+  `python -m ruff check src tests`, `python -m ruff format --check src tests`,
+  `git diff --check`; tools run via `.venv/bin/python`.
+- PASS: `pip wheel --no-deps` in an approved temporary directory; wheel contains
+  src/database.py and excludes test fixtures. No type checker is configured.
+  C01 command evidence is available; its review/release is not claimed here.
+  PR/checkpoint review pending. No subsequent implementation task started.
 
 ## C01 — Runtime checkpoint
 - [ ] **TODO · Owner A + all · Depends: T01–T03**
