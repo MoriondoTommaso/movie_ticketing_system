@@ -159,6 +159,15 @@ tasks may start when their other prerequisites are met. No next task started her
   src/database.py and excludes test fixtures. No type checker is configured.
   C01 command evidence is available; its review/release is not claimed here.
   PR/checkpoint review pending. No subsequent implementation task started.
+- Lifecycle/guard commit: `c03612f`; PR #44 (`task/T03-database-lifecycle`),
+  requested reviewer Eleonora. PR body closes issue #3 automatically upon merge.
+  Manual PR-diff checkpoint: four scoped files; no implementation blockers found.
+  `/checkpoint` is unavailable; no independent approval claimed.
+  `gh pr checks 44` reports no configured checks. Review/merge remain pending;
+  T03 remains IN REVIEW until that gate passes.
+- Isolated verification project shut down without `-v`; both dev/test volumes
+  confirmed retained with `docker volume inspect`. No active verification
+  containers or development-table changes left behind.
 
 ## C01 — Runtime checkpoint
 - [ ] **TODO · Owner A + all · Depends: T01–T03**
