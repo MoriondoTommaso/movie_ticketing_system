@@ -6,14 +6,14 @@ verified and merged. Keep one active task per person and reserve shared-file edi
 Task and checkpoint acceptance criteria remain binding.
 
 **Ownership authority:** [Named assignments](assignments.md) supersede provisional
-A–E owner/reviewer/coordination references below. Bianca handles the T01/T29
-instructor request; Eleonora coordinates isolated verification runs.
+A–E owner/reviewer/coordination references below. Bianca handles T29 submission
+administration; Eleonora coordinates isolated verification runs.
 
 Source: approved `plan/SPEC.md` and `plan/ROADMAP.md`; execution conventions and command prerequisites: `tasks/plan.md`.
 
 GitHub tracking: [issue index](github-issues.md) maps every task/checkpoint to its published issue. Keep issue and ledger completion states aligned.
 
-Every task/checkpoint is TODO. Acceptance checkboxes are not claims of completion. Dependencies below are task IDs; checkpoints additionally verify the delivered prefix in the default order. Each task includes implementation plus meaningful feature verification, with at most five substantive files. Reviewers follow the plan's ownership table. Each feature owner provides review evidence and contribution notes as work lands.
+T01 and T02 are DONE; other tasks/checkpoints retain their listed states. Dependencies below are task IDs; checkpoints additionally verify the delivered prefix in the default order. Each task includes implementation plus meaningful feature verification, with at most five substantive files. Reviewers follow the plan's ownership table. Each feature owner provides review evidence and contribution notes as work lands.
 
 ## T01 — Freeze shared design contracts
 - [x] **DONE · M · Owner Tommaso + all · Reviewer Eleonora · Depends: none · SC1, SC12**
@@ -46,7 +46,7 @@ is approved". This supersedes the pending-review notes above, accepts T01-r1 and
 closes T01 using user approval, not claimed individual student signoffs.
 
 ## T02 — Establish reproducible Python and MySQL environments
-- [ ] **IN REVIEW · M · Owner Eleonora · Reviewer Tommaso · Depends: T01 · SC2, SC12**
+- [x] **DONE · M · Owner Eleonora · Reviewer Tommaso · Depends: T01 · SC2, SC12**
 
 **Readiness update — 14 November 2026:** T01 PR #41 merged as `8cabd99`;
 explicit user approval above closes its remaining review gate. T02 is ready.
@@ -105,6 +105,11 @@ without replacing the environment. Packaging commit: `4b1d91c`.
   `/checkpoint` remains unavailable; this is not an independent review.
   `gh pr checks 42` reports no configured checks. Reviewer approval and merge
   remain pending; T02 stays IN REVIEW and does not unlock merged-prerequisite work.
+
+**Merge update — 14 November 2026:** User confirmed merging PR #42; GitHub
+confirms merge commit `aa44bce15758cf6be4d25790f88fde7fa9744407`.
+This supersedes the pending-review/merge notes above. T02 is DONE; its dependent
+tasks may start when their other prerequisites are met. No next task started here.
 
 ## T03 — Make connections and isolated database tests usable
 - [ ] **TODO · M · Owner A, E fixture review · Reviewer B · Depends: T02 · SC2, SC8**
@@ -177,14 +182,13 @@ without replacing the environment. Packaging commit: `4b1d91c`.
 **Verification:** `python -m pytest tests/integration/test_auth.py -q` with task-local accounts inserted into the isolated schema fixture; do not require T06's demo seed. C03 checks the shipped demo credentials separately.
 
 ## T08 — Open authenticated CLI sessions with role dispatch
-- [ ] **TODO · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7, SC14**
+- [ ] **TODO · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
 
 **Files:** `src/main.py`, `src/client.py`, `src/admin.py`, `tests/unit/test_cli_auth.py`.
 
 **Acceptance:**
 - [ ] `python -m src.main` asks for email/password, routes using the authenticated principal, and supports exit/EOF; invalid login/input/database errors return understandable outcomes without tracebacks or open resources.
 - [ ] Establish thin client/admin adapter entry points for incremental feature handlers; unavailable functions are not presented as working. Preserve the root greeting scaffold and document the canonical module entry point in the later README.
-- [ ] Place the SPEC §12 URL as a Python comment immediately after imports in `src/main.py`, without fetching/executing it; retain instructor-placement clarification as a final delivery follow-up.
 
 **Verification:** `python -m pytest tests/unit/test_cli_auth.py -q` covering client/admin dispatch, invalid credentials, exit and EOF using service fakes; real auth is verified by T07. Seeded live CLI login is a C03 integration obligation, not a prerequisite for completing T08.
 
@@ -441,8 +445,8 @@ without replacing the environment. Packaging commit: `4b1d91c`.
 
 **Acceptance:**
 - [ ] README gives clean setup/schema/data/run/test instructions, local synthetic credentials, assumptions links, transaction/isolation explanation, parameterized query execution, normal shutdown and separately targeted reset guidance. Document fresh-project isolation and matching ports/environment for rehearsal.
-- [ ] Evidence maps SC1–SC14 to actual commands/manual observations and reviewed artifacts, recording versions/results rather than predicted passes; each owner supplies their work and cross-review contribution.
-- [ ] Demo script has repeatable date/fixture preparation and each student is assigned an explanation outside their primary lane; instructor comment clarification remains visible until resolved in T29.
+- [ ] Evidence maps SC1–SC13 to actual commands/manual observations and reviewed artifacts, recording versions/results rather than predicted passes; each owner supplies their work and cross-review contribution.
+- [ ] Demo script has repeatable date/fixture preparation and each student is assigned an explanation outside their primary lane.
 
 **Verification:** Run `python -m pytest -q`, plan Ruff commands and `git diff --check`; execute the documented query/demo commands, manually compare every README command with actual metadata/service names and record results. Fresh installation itself is verified in T28.
 
@@ -463,17 +467,16 @@ without replacing the environment. Packaging commit: `4b1d91c`.
 
 **Verification:** README fresh setup and schema/data commands; `python -m pip check`; `python -m pytest -q`; both plan Ruff commands; `python -m src.main`; `python -m src.demo_concurrency`; `git diff --check`; `git ls-files` plus final artifact inventory/manual PDF opening.
 
-## T29 — Close instructor clarification and submission administration
-- [ ] **TODO · S · Owner B + E · Reviewer A · Depends: T01, T08, T27 · SC12, SC14**
+## T29 — Close submission administration
+- [ ] **TODO · S · Owner B + E · Reviewer A · Depends: T01, T08, T27 · SC12**
 
 **Files:** `docs/test-evidence.md`, `docs/contributions.md`.
 
 **Acceptance:**
-- [ ] Record the instructor response to B's T01 request confirming the post-import comment placement (or explicitly confirmed omission). If placement changes require code edits, add a bounded follow-up task and verify it before this task passes; do not treat a pending response as approval.
-- [ ] Replace provisional ownership with actual student names and reviewed contributions, and record the actual submission date if known. An unknown date stays explicitly unknown rather than becoming an invented software requirement.
-- [ ] Each student confirms their contribution record; the SC14 entry links to the confirmed outcome and matching delivered artifact.
+- [ ] Ensure submission documents use named ownership from `assignments.md`, reviewed contributions and the confirmed 23 November 2026 submission date.
+- [ ] Each student confirms their contribution record.
 
-**Verification:** `git diff --check`; manual review of instructor confirmation against `src/main.py` and the contribution record with all five students. Technical tasks T28/T30 can proceed while clarification is pending; C10 cannot.
+**Verification:** `git diff --check`; manual review of submission details and the contribution record with all five students.
 
 ## T30 — Rehearse the full-team presentation
 - [ ] **TODO · S · Owner all, E coordinates · Reviewer A · Depends: T26, T27 · SC13**
@@ -490,4 +493,4 @@ without replacing the environment. Packaging commit: `4b1d91c`.
 ## C10 — Mandatory delivery gate
 - [ ] **TODO · Owner all · Depends: C09, T28–T30**
 
-**Acceptance/verification:** Review T28's actual clean-install evidence, T29's instructor/submission closure, T30's five-person rehearsal and complete SC1–SC14 mapping; check no unresolved mandatory TODO/failed test remains. Preserve a known-good mandatory delivery. Optional Flask work requires separate explicit approval and its own task breakdown.
+**Acceptance/verification:** Review T28's actual clean-install evidence, T29's submission closure, T30's five-person rehearsal and complete SC1–SC13 mapping; check no unresolved mandatory TODO/failed test remains. Preserve a known-good mandatory delivery. Optional Flask work requires separate explicit approval and its own task breakdown.

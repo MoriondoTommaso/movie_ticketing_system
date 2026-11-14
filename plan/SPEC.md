@@ -1,9 +1,9 @@
 # Specification — Movie Ticketing System
 
-**Status:** Draft for explicit approval; implementation is not authorized.
-**Team:** Five students; provisional owners A–E, names to be assigned.
+**Status:** Approved scope and T01 contracts; T01/T02 merged. See `tasks/todo.md` for current implementation gates.
+**Team:** Five students; named ownership in `tasks/assignments.md`.
 **Source:** Project A — Movie Ticketing System, groups of 3–5, supplied PDF text (`docs/Groups_3_5_Cinema.pdf`).
-**Target:** 23 November 2026, tentative and unconfirmed. Phases are dependency-based, not time estimates.
+**Target:** 23 November 2026, confirmed on 14 November. Phases are dependency-based, not time estimates.
 
 ## 1. Objective
 
@@ -44,7 +44,7 @@ These are design proposals, not previously confirmed decisions. Approval of this
 | P10 | All three analytics initially include all scheduled screenings; zero-sale movies/theaters remain visible. Occupancy is total sold tickets divided by total offered seats, not an unweighted average of screening percentages. A movie without screenings has occupancy N/A. |
 | P11 | Prevent concurrent schedule insertion conflicts by locking the theater row before checking and inserting screenings. Keep transaction ownership in the relevant application service. |
 
-Unresolved policy questions and the source's unusual comment requirement are listed in section 12. No proposed policy should be treated as settled before review.
+P1–P11 were approved as recorded in `tasks/plan.md`. Remaining design decisions are reviewed in T01.
 
 ## 3. Tech stack
 
@@ -325,18 +325,21 @@ No arbitrary coverage percentage is required. Each success criterion must have c
 - [ ] **SC11:** Invalid login/payment, excess quantity, invalid/overlapping schedule, rollback, and concurrent last-seat purchase have recorded test evidence.
 - [ ] **SC12:** README explains setup/population/run commands, assumptions, transaction design/testing, and each member's contribution.
 - [ ] **SC13:** The demonstration covers ER, fresh database/data, SQL, both roles, booking, concurrency, and analytics; all members can explain them.
-- [ ] **SC14:** The instructor's requested post-import Python comment is either included as clarified or its omission is explicitly confirmed with the instructor.
+- **SC14:** Retired by user decision on 14 November 2026; not a delivery gate.
 
-The optional web interface is not required to satisfy SC1–SC14. If undertaken, use server-rendered login, screening search/booking, history/payment management, and basic administrator pages. Reuse services and transaction logic; no SPA, elaborate styling, or duplicated rules.
+The optional web interface is not required to satisfy SC1–SC13. If undertaken, use server-rendered login, screening search/booking, history/payment management, and basic administrator pages. Reuse services and transaction logic; no SPA, elaborate styling, or duplicated rules.
 
 ## 12. Open questions and approval gate
 
-1. Are proposed assumptions P1–P11, the stack additions, structure, command contract, and search semantics acceptable?
-2. Which synthetic payment types should be supported, and when is a billing address mandatory? Proposed minimum: credit and debit cards, billing address required for both. Validation checks format, not actual bank authorization.
-3. Should email uniqueness/login be case-insensitive? Proposed: trim surrounding whitespace and normalize case consistently before storage/lookup.
-4. Confirm the original-language inclusion policy and ER representation at the joint model review.
-5. The supplied PDF text explicitly requests a Python comment immediately after imports containing `https://www.youtube.com/watch?v=3TNpOD6bov8`. Proposed interpretation: place it in the CLI entry point; verify whether the instructor expects it elsewhere. This is a source requirement to clarify, not a link to execute or fetch.
-6. Assign actual names to A–E. Do not assume skills or equal available hours; rebalance the lanes at checkpoints if needed.
-7. Confirm the actual submission date when known. The provisional date is not a commitment.
+1. P1–P11, stack additions, structure, command contract and search semantics are approved.
+2. Synthetic credit/debit cards require 13–19 digits after removing spaces/hyphens and a nonblank billing address. No Luhn check, bank lookup, expiry or CVV.
+3. Email storage/login trims surrounding whitespace and normalizes case consistently.
+4. Original language is included among available languages. The 14 November design interview selected a shared `users` table and separate `client_profiles`, with exactly one client/admin role per account. Administrators use separate client credentials to buy.
+5. Cinema timezone: `Europe/Rome`, including daylight-saving changes, independent of developer machine settings.
+6. Named owners are recorded in `tasks/assignments.md`.
+7. Submission date: 23 November 2026, confirmed.
+8. Services use typed functions, dataclass results/principals, and named exceptions for validation, authentication, authorization, capacity and database failures; services never print or prompt.
+9. Screening times use local MySQL `DATETIME` in Europe/Rome. Convert an injectable clock explicitly to Rome for comparisons; do not inherit the host timezone.
+10. Client search defaults to screenings that have not started. Administrator creation rejects past starts. Administrator schedule, history and reports retain historical records; seed fixtures may include historical screenings. Booking remains prohibited once a screening starts.
 
-**Approval request:** Review this complete specification and the companion `ROADMAP.md`. Explicitly approve them or identify amendments. After approval, run `/breakdown` to turn the phases into small implementation tasks; keep generated planning documents within the permitted paths. No implementation begins in this session.
+**Current execution:** The design interview and T01 contract approval are complete; the user explicitly approved the contracts. T01 and T02 are merged. Follow `tasks/todo.md` for subsequent task prerequisites; optional web work still requires separate approval.

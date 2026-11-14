@@ -6,8 +6,8 @@
 > Use the current [parallel-work protocol](../tasks/parallel-work.md) for readiness
 > and file reservations. It replaces the intermediate sequential B01–B09 policy.
 
-**Status:** Draft for explicit approval alongside `SPEC.md`.
-**Planning target:** 23 November 2026, tentative; no effort or calendar commitments assumed.
+**Status:** Approved; current execution authority is in `tasks/`.
+**Submission target:** 23 November 2026, confirmed.
 **Approach:** Short shared design checkpoint, then five parallel feature workstreams with incremental integration. Detailed implementation tasks are deferred to `/breakdown` after approval.
 
 ## 1. Parallelization strategy
@@ -149,7 +149,7 @@ Parallel responsibilities:
 - **E:** Assemble README, query/analytic demonstrations, test evidence, and contribution records from all owners.
 - **All:** Rehearse the whole demonstration; each member explains a module they did not primarily implement.
 
-**Exit gate:** SC1–SC14 in `SPEC.md` are met, instructor-specific comment requirement is resolved, required files are present, and README commands work from a clean environment. Preserve a known-good mandatory deliverable before considering the web extension.
+**Exit gate:** SC1–SC13 in `SPEC.md` are met, required files are present, and README commands work from a clean environment. Preserve a known-good mandatory deliverable before considering the web extension.
 
 ### P5 — Optional minimal web interface
 
@@ -194,7 +194,7 @@ Keep styles minimal. Add CSRF protection for writes and enforce role/ownership c
 | Optional web consumes mandatory-deliverable effort | High | Start only after P4 and explicit go-ahead; all |
 | Students cannot explain others' work | High | Cross-reviews and rotating full-system rehearsals; all |
 | Deadline or member availability changes | Medium | Dependency-based phases, checkpoint rebalancing, retain optional scope buffer; all |
-| Ambiguous PDF rules lead to inconsistent implementations | Medium | Approve the assumptions register and clarify instructor comment placement before finalization; all |
+| Ambiguous PDF rules lead to inconsistent implementations | Medium | Review the assumptions register and freeze behavior contracts in T01; all |
 
 ## 6. What `/breakdown` should produce next
 

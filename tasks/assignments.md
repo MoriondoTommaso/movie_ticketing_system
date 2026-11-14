@@ -12,7 +12,8 @@ not issue number or another person's whole workload.
 **One active implementation task per person; multiple independent lanes can run.**
 Start when that task's listed prerequisites are verified and merged into `main`.
 Do not wait for an entire owner or checkpoint window unless it is an explicit
-prerequisite. All implementation tasks remain TODO.
+prerequisite. T01 and T02 are approved and merged; remaining tasks retain their
+ledger states.
 
 See [how to start and work in parallel](parallel-work.md) for the readiness waves,
 shared-file reservations, review routing and integration protocol.
@@ -107,8 +108,8 @@ are invented; ledger dependencies remain binding.
 - Each owner delivers their tests and handler changes. Reserve shared-file edits
   with the integrator before starting; use the protocol in `parallel-work.md`.
 - Bianca assembles README/contributions/demo notes from each responsible owner.
-  Bianca sends the T01 instructor clarification request and follows up in T29,
-  replacing provisional B. All five review contracts and confirm contributions.
+  Bianca coordinates T29 submission administration. All five review contracts
+  and confirm contributions.
 
 ## Pending invitation
 
