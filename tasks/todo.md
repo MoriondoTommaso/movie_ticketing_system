@@ -112,7 +112,7 @@ This supersedes the pending-review/merge notes above. T02 is DONE; its dependent
 tasks may start when their other prerequisites are met. No next task started here.
 
 ## T03 — Make connections and isolated database tests usable
-- [ ] **TODO · M · Owner A, E fixture review · Reviewer B · Depends: T02 · SC2, SC8**
+- [ ] **IN PROGRESS · M · Owner Tommaso, Eleonora fixture review · Reviewer Eleonora · Depends: T02 · SC2, SC8**
 
 **Files:** `src/database.py`, `tests/conftest.py`, `tests/integration/test_database.py`.
 
@@ -122,6 +122,10 @@ tasks may start when their other prerequisites are met. No next task started her
 - [ ] Unseeded connection fixtures work now; later schema/seed fixtures have explicit opt-in lifecycle and reset only the test database. Verify connection independence, transaction rollback, resource cleanup and target refusal with a disposable probe table.
 
 **Verification:** `python -m pytest tests/integration/test_database.py -q`; Ruff on these three files. Guard tests must demonstrate no destructive statement was issued for a rejected target; use fake settings/call capture for that negative case, not a destructive experiment on development data.
+
+**Progress — 14 November 2026:** T02 is merged and DONE. First slice: settings
+tests failed on the missing database module, then passed (12 offline cases).
+No real-MySQL or destructive-reset evidence claimed yet.
 
 ## C01 — Runtime checkpoint
 - [ ] **TODO · Owner A + all · Depends: T01–T03**
