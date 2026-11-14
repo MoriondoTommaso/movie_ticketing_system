@@ -16,7 +16,7 @@ GitHub tracking: [issue index](github-issues.md) maps every task/checkpoint to i
 Every task/checkpoint is TODO. Acceptance checkboxes are not claims of completion. Dependencies below are task IDs; checkpoints additionally verify the delivered prefix in the default order. Each task includes implementation plus meaningful feature verification, with at most five substantive files. Reviewers follow the plan's ownership table. Each feature owner provides review evidence and contribution notes as work lands.
 
 ## T01 — Freeze shared design contracts
-- [ ] **IN REVIEW · M · Owner Tommaso + all · Reviewer Eleonora · Depends: none · SC1, SC12**
+- [x] **DONE · M · Owner Tommaso + all · Reviewer Eleonora · Depends: none · SC1, SC12**
 
 **Files:** `docs/contracts.md`, `docs/assumptions.md`, `docs/fixtures.md`, `docs/contributions.md`.
 
@@ -40,17 +40,71 @@ Draft commit: `043cfb1`. Draft PR: #41 (`task/T01-shared-design-contracts`).
 External contract approval is still pending; do not merge yet.
 T01 remains incomplete and T02 blocked on joint approval.
 
+**Approval update — 14 November 2026:** After being explicitly asked whether to
+replace the joint-review gate with their approval, the user replied "everything
+is approved". This supersedes the pending-review notes above, accepts T01-r1 and
+closes T01 using user approval, not claimed individual student signoffs.
+
 ## T02 — Establish reproducible Python and MySQL environments
-- [ ] **TODO · M · Owner A · Reviewer B · Depends: T01 · SC2, SC12**
+- [ ] **IN REVIEW · M · Owner Eleonora · Reviewer Tommaso · Depends: T01 · SC2, SC12**
+
+**Readiness update — 14 November 2026:** T01 PR #41 merged as `8cabd99`;
+explicit user approval above closes its remaining review gate. T02 is ready.
+Packaging slice: inline TOML contract check failed for missing pinned connector,
+then passed after metadata/package initialization. Editable `.[dev]` installation
+passed on Python 3.13.13. Existing `.venv` lacked pip; bootstrapped with ensurepip
+without replacing the environment. Packaging commit: `4b1d91c`.
 
 **Files:** `pyproject.toml`, `compose.yaml`, `.env.example`, `.gitignore`, `src/__init__.py`.
 
 **Acceptance:**
-- [ ] Editable Python 3.13 installation works with pinned compatible connector/dotenv and dev pytest/Ruff metadata; Flask is not required. Configure package discovery and Ruff consistently with SPEC §8.
-- [ ] Pinned MySQL 8.4/InnoDB development and profile-test services have healthchecks, independent storage/credentials/names/ports, and environment settings matching SPEC §9; startup initializes the empty databases and scoped users.
-- [ ] Intentional design/submission documents become trackable without bulk-adding ignored files; `.env` remains ignored and `.env.example` contains only fictional local credentials. Normal shutdown retains volumes.
+- [x] Editable Python 3.13 installation works with pinned compatible connector/dotenv and dev pytest/Ruff metadata; Flask is not required. Configure package discovery and Ruff consistently with SPEC §8.
+- [x] Pinned MySQL 8.4/InnoDB development and profile-test services have healthchecks, independent storage/credentials/names/ports, and environment settings matching SPEC §9; startup initializes the empty databases and scoped users.
+- [x] Intentional design/submission documents become trackable without bulk-adding ignored files; `.env` remains ignored and `.env.example` contains only fictional local credentials. Normal shutdown retains volumes.
 
 **Verification:** Plan environment commands, `python -m pytest --version`, `python -m ruff --version`, `git check-ignore .env`, and `git status --short --untracked-files=all`. Inspect `docker compose --profile test config` for isolation and confirm services become healthy. A configured but unreachable Docker daemon is an incomplete gate.
+
+**T02 evidence — 14 November 2026 (SC2, SC12):**
+- Python 3.13.13; Docker server 29.7.2; Compose v5.5.1.
+  Connector 26.10.0, dotenv 1.2.4, pytest 9.2.0, Ruff 0.17.5,
+  setuptools 84.2.1; pytest transitive dependencies pinned in dev metadata.
+- RED: inline TOML packaging assertion failed for absent pinned connector;
+  GREEN after metadata/package slice. RED: Compose config reported no file;
+  GREEN after adding compose.yaml. No application behavior or feature tests added.
+- PASS: `.venv/bin/python -m pip install -e '.[dev]'`, `pip check`,
+  `pytest --version`, `ruff --version`, `ruff check src`,
+  `ruff format --check src`, and `git diff --check`.
+  These use `.venv/bin/python -m` for the Python tools.
+- PASS: `docker compose --profile test config --quiet`; inline configuration
+  assertions verify digest pin, example-env parity, distinct credentials/names/
+  ports/networks/volumes, test profile, local bindings and SELECT 1 healthchecks.
+- Live verification used project `db-project-t02-20261114`, `--env-file .env.example`,
+  and shell overrides `DB_PORT=23306 TEST_DB_PORT=23307` for every Compose call:
+  `up -d --wait --wait-timeout 180 db`, then
+  `--profile test up -d --wait --wait-timeout 180 test-db`; both healthy.
+  Connector smoke assertions: 8.4.13, InnoDB, REPEATABLE-READ, empty schemas,
+  distinct server UUIDs, grants limited to own database, opposite database
+  USE denied with error1044. No schema/data writes or development resets.
+  The first grant-format assertion was corrected to expect MySQL's escaped
+  underscore in SHOW GRANTS; permission checks were not relaxed.
+- PASS: `pip wheel --no-deps` into an approved temporary directory, fresh lean
+  venv installs that wheel, `pip check`, and imports src/mysql.connector/dotenv
+  outside the checkout; Flask and pytest absent from the lean installation.
+- PASS: `git check-ignore .env`; `git check-ignore --no-index` confirms .env.example
+  and intentional docs are not ignored. Existing .gitignore already meets T02;
+  left unchanged. No .env overwritten or source PDF bulk-added.
+- PASS: isolated `--profile test down` then `docker volume inspect` confirms
+  both project volumes retained. No `down -v` or destructive cleanup.
+- Feature pytest suites start in T03; none exist yet, so no zero-test run is
+  reported as passing. No type checker is configured/required by this task.
+  No next task started.
+- Runtime commit: `8411533`. PR: #42 (`task/T02-runtime`).
+  Manual PR-diff checkpoint: five scoped files, no implementation blockers found;
+  credentials are explicitly fictional, localhost-only exposure, independent
+  test storage/network/account, no schema changes or automatic destructive resets.
+  `/checkpoint` remains unavailable; this is not an independent review.
+  `gh pr checks 42` reports no configured checks. Reviewer approval and merge
+  remain pending; T02 stays IN REVIEW and does not unlock merged-prerequisite work.
 
 ## T03 — Make connections and isolated database tests usable
 - [ ] **TODO · M · Owner A, E fixture review · Reviewer B · Depends: T02 · SC2, SC8**
