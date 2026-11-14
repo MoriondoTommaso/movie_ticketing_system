@@ -9,7 +9,7 @@ of responsibility, not permission to start all their issues immediately.
 1. **Tommaso starts T01 (#1)** with a shared contract review. Freeze schema names,
    function signatures/result/error shapes, principal, clock, fixtures and lock
    order. Eleonora checks runtime/fixtures, Alessandro auth/payments, Deniz report
-   expectations and Bianca rule boundaries. Bianca sends the instructor question.
+   expectations and Bianca rule boundaries.
 2. **After T01 merges, Eleonora delivers T02 (#2).** Other members can prepare
    designs and test cases against agreed contracts, but cannot claim blocked
    implementation tasks are complete.
@@ -47,7 +47,7 @@ feature completion. Once seeds and dispatch land, the lanes overlap naturally.
 | T25 integrated CLI proof | Eleonora | T10, T14, T17, T18, T21, T22, T23, T24 |
 | T27 handover documentation | Bianca | T24, T25, T26 |
 | T28 clean installation | Eleonora | T27 and C09 |
-| T29 instructor/submission closure | Bianca | T01, T08, T27 |
+| T29 submission closure | Bianca | T01, T08, T27 |
 | T30 rehearsal | Bianca coordinates all five | T26, T27 |
 
 Tommaso's suggested post-discovery order is T13 → T14 → T15 → T18 → T16 → T17 →

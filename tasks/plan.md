@@ -4,9 +4,9 @@
 
 The user explicitly approved `plan/SPEC.md` and `plan/ROADMAP.md` in this conversation after being asked to approve P1–P11 and the proposed defaults in SPEC §12. This records approval despite the source documents retaining their earlier draft headings. The current request explicitly selects `tasks/plan.md` and `tasks/todo.md`, superseding the earlier planning-output path restriction. This change creates planning documents only.
 
-Deliver the mandatory Python CLI, MySQL database, five SQL queries, three reports, ER PDF, transaction evidence, and documentation (SC1–SC14). Optional Flask work is deferred until the mandatory delivery gate passes and the user separately authorizes it; it is not a TODO in this ledger.
+Deliver the mandatory Python CLI, MySQL database, five SQL queries, three reports, ER PDF, transaction evidence, and documentation (SC1–SC13). Optional Flask work is deferred until the mandatory delivery gate passes and the user separately authorizes it; it is not a TODO in this ledger.
 
-Approved defaults include Python 3.13, MySQL 8.4/InnoDB, scrypt password hashes, credit/debit synthetic cards with billing addresses, normalized case-insensitive email, and original language among available languages. Exact dependency versions, the cinema timezone, card-format limits, ER details, operation names and return shapes are frozen in T01–T06. Actual student names and submission date remain administrative follow-ups. B requests instructor clarification in T01; confirmation of comment placement remains a T29 delivery condition. Approval of the proposed entry-point placement does not constitute instructor confirmation.
+Approved defaults include Python 3.13, MySQL 8.4/InnoDB, scrypt password hashes, credit/debit synthetic cards with billing addresses, normalized case-insensitive email, and original language among available languages. The 14 November interview confirmed Europe/Rome; 13–19 card digits after removing spaces/hyphens, nonblank billing address, no Luhn/bank validation, expiry or CVV; and submission on 23 November 2026. Named owners are in `assignments.md`. Exact dependency versions, ER details, operation names and return shapes are frozen in T01–T06. The user requests a design interview before contract drafting. SC14 is retired and no longer gates delivery.
 
 ## Repository evidence (Verify tier)
 
@@ -19,6 +19,8 @@ Approved defaults include Python 3.13, MySQL 8.4/InnoDB, scrypt password hashes,
 These are greenfield service seams prescribed by the approved specification, not existing service implementations. Keep the root `main.py` scaffold until an intentional compatibility decision in T08; do not silently remove it.
 
 ## Architecture and integration decisions
+
+**14 November design interview:** Use `users` plus `client_profiles`, exactly one role per account, typed service functions with dataclass results/principals and named exceptions, and Europe/Rome local MySQL `DATETIME` with an explicitly converted injectable clock. Client search defaults to not-yet-started screenings; administrator creation rejects past starts. Historical records remain available to schedule/history/reports and seed fixtures. T01-r1 contracts were drafted, explicitly approved by the user in place of the pending joint-review gate, and merged in PR #41. T02 runtime verification passed and PR #42 merged as `aa44bce`.
 
 1. One local Python application, explicit parameterized SQL, and separate development/test MySQL services. No shared connection or implicit commits in transaction helpers. Test setup refuses development targets before any reset.
 2. Freeze schema/fixture IDs, principal/error shapes, typed service results, clock/timezone rules, and connection ownership early. `src/auth.py` supplies authentication/role primitives; each service enforces its own boundary. Menus never establish authorization.
@@ -33,7 +35,7 @@ These are greenfield service seams prescribed by the approved specification, not
 
 **Current authority:** [Named assignments](assignments.md) supersede provisional
 A–E staffing/reviews throughout this document. Letters below describe architectural
-lanes only; use the named plan for integrators, checkpoints and instructor follow-up.
+lanes only; use the named plan for integrators and checkpoints.
 
 | Lane | Primary owner | Reviewer | Shared-file coordination |
 |---|---|---|---|
@@ -67,7 +69,7 @@ The canonical ledger is `tasks/todo.md`; every task and checkpoint starts TODO. 
 | Reporting | T19 movie revenue, T20 theater revenue, T21 occupancy | C07 |
 | Remaining race/SQL proof | T22 schedule race, T23 payment race, T24 five-query artifact | C08 |
 | Complete experience | T25 CLI journeys, T26 contention demo, T27 handover docs | C09 |
-| Delivery | T28 clean install, T29 instructor/submission closure, T30 team rehearsal | C10 |
+| Delivery | T28 clean install, T29 submission closure, T30 team rehearsal | C10 |
 
 Dependency edges (checkpoint windows give the default integration order, not unnecessary global feature prerequisites):
 
@@ -165,7 +167,6 @@ C01 requires integration tests; unit starts T05 and concurrency starts with the 
 | SC11 negative/race evidence | T07, T09–T10, T13, T15–T17, T22–T23, T27 |
 | SC12 reproducible README/contributions | T27–T29 |
 | SC13 full demonstration/understanding | T26–T28, T30 |
-| SC14 instructor comment | T01, T08, T29 |
 
 ## Risks and outstanding decisions
 
@@ -180,8 +181,7 @@ C01 requires integration tests; unit starts T05 and concurrency starts with the 
 | Demo dates become past dates | Medium: demo fails | Seed relative to a declared date, controllable clock in tests, fresh rehearsal T06/T28 |
 | Three theaters cannot cover four capability combinations | Medium: incomplete fixtures | T06 uses representative three-theater demo data plus focused fourth-combination test fixtures; T05 exhaustively covers eight prices |
 | Price/capacity multiplication in report joins | High: wrong reports | Hand-calculated multi-purchase fixtures T19–T21 |
-| Instructor clarification pending | High: blocks SC14 closure | B requests in T01 and confirms in T29; technical checks proceed independently |
-| Student/date details pending | Medium: coordination risk | T01 records unknowns; T29 closes contribution names and records known date honestly |
+| Contract drift after approval | High: inconsistent implementations | T01-r1 approved; affected owners review subsequent changes |
 
 ## Plan review
 
