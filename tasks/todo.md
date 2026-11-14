@@ -16,16 +16,29 @@ GitHub tracking: [issue index](github-issues.md) maps every task/checkpoint to i
 Every task/checkpoint is TODO. Acceptance checkboxes are not claims of completion. Dependencies below are task IDs; checkpoints additionally verify the delivered prefix in the default order. Each task includes implementation plus meaningful feature verification, with at most five substantive files. Reviewers follow the plan's ownership table. Each feature owner provides review evidence and contribution notes as work lands.
 
 ## T01 — Freeze shared design contracts
-- [ ] **TODO · M · Owner A + all · Reviewer B · Depends: none · SC1, SC12**
+- [ ] **IN REVIEW · M · Owner Tommaso + all · Reviewer Eleonora · Depends: none · SC1, SC12**
 
 **Files:** `docs/contracts.md`, `docs/assumptions.md`, `docs/fixtures.md`, `docs/contributions.md`.
 
 **Acceptance:**
-- [ ] Record approved policies, exact cinema timezone, synthetic card-format limits, email normalization, table/column/type/key proposals, cardinalities, and each invariant's database/service enforcement location. Record actual owners/date if known; B requests instructor clarification of the post-import comment placement now and records the request plus pending follow-up for T29.
+- [ ] Draft contracts using the completed 14 November design interview (SPEC §12). Record approved policies, Europe/Rome timezone, synthetic card-format limits, email normalization, table/column/type/key proposals, cardinalities, and each invariant's database/service enforcement location. Record named owners and confirmed 23 November 2026 submission date.
 - [ ] Freeze operation names, arguments/results/errors, authenticated-principal trust boundary, connection lifecycle, transaction-compatible payment/screening helpers, clock injection, no-prompt service boundary, and screening→payment lock order with all consumers.
 - [ ] Specify fixture IDs, hand-calculable report cases, role/ownership cases, capacity-10/sold-9 history, repeatable demo dates, and the field/parameter contracts for Q1–Q5; all five lanes review.
 
-**Verification:** `git diff --check`; manual joint walkthrough of SPEC §§4–7 and SC1–SC14 against the contract/fixture documents, recording reviewers and unresolved items. No implementation proceeds on an unresolved behavior contract.
+**Verification:** `git diff --check`; manual joint walkthrough of SPEC §§4–7 and SC1–SC13 against the contract/fixture documents, recording reviewers and unresolved items. No implementation proceeds on an unresolved behavior contract.
+
+**T01 progress — 14 November 2026:** Draft T01-r1 in the four listed documents.
+Policy/design interview complete; exact schema/API/error/fixture proposals await
+all five reviewers in `docs/contributions.md`. No student signoffs fabricated.
+Documentation-only: TDD/build/lint/types not applicable; tooling is a T02 task.
+Verification: `git diff --check` passed; Python 3.13 document/oracle check passed
+(four documents, 12 screenings, eight purchases, per-screening reconciliation,
+all eight movie report totals, global 49 tickets / EUR840.20 / 220 seats).
+Manual diff checkpoint: scoped documentation only; runtime checks are not claimed.
+`/checkpoint` is unavailable in this session; independent approval is not claimed.
+Draft commit: `043cfb1`. Draft PR: #41 (`task/T01-shared-design-contracts`).
+External contract approval is still pending; do not merge yet.
+T01 remains incomplete and T02 blocked on joint approval.
 
 ## T02 — Establish reproducible Python and MySQL environments
 - [ ] **TODO · M · Owner A · Reviewer B · Depends: T01 · SC2, SC12**
