@@ -97,7 +97,14 @@ without replacing the environment. Packaging commit: `4b1d91c`.
   both project volumes retained. No `down -v` or destructive cleanup.
 - Feature pytest suites start in T03; none exist yet, so no zero-test run is
   reported as passing. No type checker is configured/required by this task.
-  Manual diff checkpoint and PR review remain pending; no next task started.
+  No next task started.
+- Runtime commit: `8411533`. PR: #42 (`task/T02-runtime`).
+  Manual PR-diff checkpoint: five scoped files, no implementation blockers found;
+  credentials are explicitly fictional, localhost-only exposure, independent
+  test storage/network/account, no schema changes or automatic destructive resets.
+  `/checkpoint` remains unavailable; this is not an independent review.
+  `gh pr checks 42` reports no configured checks. Reviewer approval and merge
+  remain pending; T02 stays IN REVIEW and does not unlock merged-prerequisite work.
 
 ## T03 — Make connections and isolated database tests usable
 - [ ] **TODO · M · Owner A, E fixture review · Reviewer B · Depends: T02 · SC2, SC8**
