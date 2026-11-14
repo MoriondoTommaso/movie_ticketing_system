@@ -34,8 +34,10 @@ Documentation-only: TDD/build/lint/types not applicable; tooling is a T02 task.
 Verification: `git diff --check` passed; Python 3.13 document/oracle check passed
 (four documents, 12 screenings, eight purchases, per-screening reconciliation,
 all eight movie report totals, global 49 tickets / EUR840.20 / 220 seats).
-Diff checkpoint: scoped documentation only; runtime checks are not claimed.
-PR/commit references follow below; external contract approval is still pending.
+Manual diff checkpoint: scoped documentation only; runtime checks are not claimed.
+`/checkpoint` is unavailable in this session; independent approval is not claimed.
+Draft commit: `043cfb1`. Draft PR: #41 (`task/T01-shared-design-contracts`).
+External contract approval is still pending; do not merge yet.
 T01 remains incomplete and T02 blocked on joint approval.
 
 ## T02 — Establish reproducible Python and MySQL environments
