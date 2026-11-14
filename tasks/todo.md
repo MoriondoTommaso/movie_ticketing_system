@@ -16,7 +16,7 @@ GitHub tracking: [issue index](github-issues.md) maps every task/checkpoint to i
 Every task/checkpoint is TODO. Acceptance checkboxes are not claims of completion. Dependencies below are task IDs; checkpoints additionally verify the delivered prefix in the default order. Each task includes implementation plus meaningful feature verification, with at most five substantive files. Reviewers follow the plan's ownership table. Each feature owner provides review evidence and contribution notes as work lands.
 
 ## T01 — Freeze shared design contracts
-- [ ] **IN REVIEW · M · Owner Tommaso + all · Reviewer Eleonora · Depends: none · SC1, SC12**
+- [x] **DONE · M · Owner Tommaso + all · Reviewer Eleonora · Depends: none · SC1, SC12**
 
 **Files:** `docs/contracts.md`, `docs/assumptions.md`, `docs/fixtures.md`, `docs/contributions.md`.
 
@@ -40,8 +40,20 @@ Draft commit: `043cfb1`. Draft PR: #41 (`task/T01-shared-design-contracts`).
 External contract approval is still pending; do not merge yet.
 T01 remains incomplete and T02 blocked on joint approval.
 
+**Approval update — 14 November 2026:** After being explicitly asked whether to
+replace the joint-review gate with their approval, the user replied "everything
+is approved". This supersedes the pending-review notes above, accepts T01-r1 and
+closes T01 using user approval, not claimed individual student signoffs.
+
 ## T02 — Establish reproducible Python and MySQL environments
-- [ ] **TODO · M · Owner A · Reviewer B · Depends: T01 · SC2, SC12**
+- [ ] **IN PROGRESS · M · Owner Eleonora · Reviewer Tommaso · Depends: T01 · SC2, SC12**
+
+**Readiness update — 14 November 2026:** T01 PR #41 merged as `8cabd99`;
+explicit user approval above closes its remaining review gate. T02 is ready.
+Packaging slice: inline TOML contract check failed for missing pinned connector,
+then passed after metadata/package initialization. Editable `.[dev]` installation
+passed on Python 3.13.13. Existing `.venv` lacked pip; bootstrapped with ensurepip
+without replacing the environment. Compose verification remains pending.
 
 **Files:** `pyproject.toml`, `compose.yaml`, `.env.example`, `.gitignore`, `src/__init__.py`.
 
