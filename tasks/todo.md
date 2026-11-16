@@ -235,7 +235,7 @@ preserve the original failure when rollback also fails; add grant-option refusal
 and committed-work preservation regression tests. No next task started.
 
 ## T04 — Deliver ER model and enforceable relational schema
-- [ ] **TODO · M · Owner A · Reviewer B · Depends: T03 · SC1, SC2**
+- [ ] **IN PROGRESS · M · Owner A · Reviewer B · Depends: T03 · SC1, SC2**
 
 **Files:** `schema.sql`, `docs/er-model-source.drawio`, `ER_diagram.pdf`, `tests/integration/test_schema.py`.
 
@@ -245,6 +245,16 @@ and committed-work preservation regression tests. No next task started.
 - [ ] Real MySQL tests reject duplicate emails, invalid local numeric values, missing foreign keys and invalid movie-language associations; retained purchase references prevent destructive payment deletion. Document minimum-child rules that require seed/service validation.
 
 **Verification:** Plan's clean `schema.sql` load command on the empty dev database; `python -m pytest tests/integration/test_schema.py -q`; manually open `ER_diagram.pdf` and compare every entity and constraint to the approved contract.
+
+**T04 progress — 16 November 2026:** Branch `task/T04-relational-schema` from
+merged C01 `1c72a42`. Scope is the four task files plus this ledger.
+TDD slice 1: 46-line schema test failed with missing schema.sql against real
+MySQL, then passed after creating the 11 mandatory-attribute InnoDB entities,
+primary/foreign keys and enforcement-boundary comments. Focused test: 1 passed;
+Ruff lint/format and whitespace checks passed. Constraints/indexes and ER
+deliverables follow in scoped slices; no later task started.
+Isolated verifier: `db-project-t04-20261116`, `.env.example` plus exported
+`DB_PORT=23506 TEST_DB_PORT=23507`; existing `.env` preserved.
 
 ## T05 — Implement the authoritative ticket price
 - [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**
