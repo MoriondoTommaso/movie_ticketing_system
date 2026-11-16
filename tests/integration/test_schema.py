@@ -1,5 +1,6 @@
 """Real MySQL constraints; reset only through T03's guarded opt-in fixture."""
 
+from decimal import Decimal
 from pathlib import Path
 
 import mysql.connector
@@ -92,8 +93,6 @@ def populated_schema(schema_connection):
         ("movies", "runtime_minutes", 0),
         ("movies", "runtime_minutes", -1),
         ("screenings", "sold_tickets", -1),
-        ("purchases", "quantity", 0),
-        ("purchases", "quantity", -1),
         ("purchases", "unit_price", -1),
         ("purchases", "total_amount", -1),
         ("purchases", "total_amount", 14.99),
@@ -105,6 +104,20 @@ def test_local_checks_reject_invalid_values(populated_schema, table, column, val
         with pytest.raises(mysql.connector.Error) as error:
             cursor.execute(f"UPDATE {table} SET {column} = %s", (value,))
         assert error.value.errno == 3819, "Must fail a CHECK, not unrelated SQL"
+
+
+@pytest.mark.parametrize("quantity", [0, -1])
+def test_quantity_must_be_positive_even_when_amount_equation_holds(
+    populated_schema, quantity
+):
+    with populated_schema.cursor() as cursor:
+        with pytest.raises(mysql.connector.Error) as error:
+            cursor.execute(
+                "UPDATE purchases SET quantity = %s, unit_price = 0, total_amount = 0",
+                (quantity,),
+            )
+        assert error.value.errno == 3819
+        assert "ck_purchase_quantity" in str(error.value)
 
 
 @pytest.mark.parametrize(
@@ -186,6 +199,12 @@ def test_valid_boundaries_and_repeated_synthetic_cards(populated_schema):
         assert cursor.fetchall() == [(1, "0" * 13), (1, "0" * 13)]
         cursor.execute("SELECT quantity, unit_price, total_amount FROM purchases")
         assert cursor.fetchone() == (2, 0, 0)
+        cursor.execute(
+            "UPDATE purchases SET quantity = 3, unit_price = %s, total_amount = %s",
+            (Decimal("12.34"), Decimal("37.02")),
+        )
+        cursor.execute("SELECT quantity, unit_price, total_amount FROM purchases")
+        assert cursor.fetchone() == (3, Decimal("12.34"), Decimal("37.02"))
 
 
 def test_lookup_and_history_indexes(schema_connection):

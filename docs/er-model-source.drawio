@@ -1,0 +1,447 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" version="24.7.17">
+  <!--T04 / T01-r1. Editable vector entities, attributes and connectors. Open in diagrams.net; File > Export as > PDF > All pages. UINT = INT UNSIGNED; VC = VARCHAR; D = DECIMAL. Every attribute is NOT NULL. FK arrows point from parent to child.-->
+  <diagram id="page-1" name="01 - Relational ER model">
+    <mxGraphModel page="1" pageScale="1" pageWidth="1800" pageHeight="1400" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="MOVIE TICKETING / Relational ER model" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=34;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="24" width="1700" height="68" />
+        </mxCell>
+        <mxCell id="subtitle" value="T04 | MySQL 8.4 / InnoDB / utf8mb4 | T01-r1 correspondence | 16 November 2026" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=22;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="88" width="1700" height="48" />
+        </mxCell>
+        <mxCell id="users" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="160" width="360" height="190" />
+        </mxCell>
+        <mxCell id="users-header" value="users" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="users-attributes" value="PK user_id: UINT AI&#10;UQ email: VC(254)&#10;   password_hash: VC(255)&#10;   role: VC(10)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="users">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="142" />
+        </mxCell>
+        <mxCell id="client_profiles" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="480" y="160" width="360" height="160" />
+        </mxCell>
+        <mxCell id="client_profiles-header" value="client_profiles" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="client_profiles">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="client_profiles-attributes" value="PK/FK user_id: UINT&#10;   full_name: VC(120)&#10;   address: VC(255)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="client_profiles">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="112" />
+        </mxCell>
+        <mxCell id="payment_methods" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="160" width="360" height="260" />
+        </mxCell>
+        <mxCell id="payment_methods-header" value="payment_methods" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="payment_methods">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="payment_methods-attributes" value="PK payment_method_id: UINT AI&#10;FK client_id: UINT&#10;   payment_type: VC(6)&#10;   card_number: VC(19)&#10;   billing_address: VC(255)&#10;   active: BOOLEAN =1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="payment_methods">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="212" />
+        </mxCell>
+        <mxCell id="theaters" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1360" y="660" width="400" height="190" />
+        </mxCell>
+        <mxCell id="theaters-header" value="theaters" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="theaters">
+          <mxGeometry as="geometry" x="0" y="0" width="400" height="48" />
+        </mxCell>
+        <mxCell id="theaters-attributes" value="PK theater_id: UINT AI&#10;   capacity: INT&#10;   supports_3d: BOOLEAN&#10;   enhanced_sound: BOOLEAN" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="theaters">
+          <mxGeometry as="geometry" x="0" y="48" width="400" height="142" />
+        </mxCell>
+        <mxCell id="languages" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="40" y="660" width="360" height="130" />
+        </mxCell>
+        <mxCell id="languages-header" value="languages" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="languages">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="languages-attributes" value="PK language_id: UINT AI&#10;UQ name: VC(60)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="languages">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="82" />
+        </mxCell>
+        <mxCell id="genres" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1360" y="1100" width="400" height="130" />
+        </mxCell>
+        <mxCell id="genres-header" value="genres" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="genres">
+          <mxGeometry as="geometry" x="0" y="0" width="400" height="48" />
+        </mxCell>
+        <mxCell id="genres-attributes" value="PK genre_id: UINT AI&#10;UQ name: VC(60)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="genres">
+          <mxGeometry as="geometry" x="0" y="48" width="400" height="82" />
+        </mxCell>
+        <mxCell id="movies" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="480" y="660" width="360" height="260" />
+        </mxCell>
+        <mxCell id="movies-header" value="movies" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="movies">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="movies-attributes" value="PK movie_id: UINT AI&#10;   title: VC(200)&#10;   release_date: DATE&#10;   runtime_minutes: INT&#10;FK original_language_id: UINT&#10;   description: TEXT" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="movies">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="212" />
+        </mxCell>
+        <mxCell id="movie_languages" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="480" y="1100" width="360" height="130" />
+        </mxCell>
+        <mxCell id="movie_languages-header" value="movie_languages" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="movie_languages">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="movie_languages-attributes" value="PK/FK movie_id: UINT&#10;PK/FK language_id: UINT" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="movie_languages">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="82" />
+        </mxCell>
+        <mxCell id="movie_genres" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="1100" width="360" height="130" />
+        </mxCell>
+        <mxCell id="movie_genres-header" value="movie_genres" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="movie_genres">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="movie_genres-attributes" value="PK/FK movie_id: UINT&#10;PK/FK genre_id: UINT" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="movie_genres">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="82" />
+        </mxCell>
+        <mxCell id="screenings" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="660" width="360" height="260" />
+        </mxCell>
+        <mxCell id="screenings-header" value="screenings" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="screenings">
+          <mxGeometry as="geometry" x="0" y="0" width="360" height="48" />
+        </mxCell>
+        <mxCell id="screenings-attributes" value="PK screening_id: UINT AI&#10;FK movie_id: UINT&#10;FK theater_id: UINT&#10;FK language_id: UINT&#10;   starts_at: DATETIME&#10;   sold_tickets: INT =0" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="screenings">
+          <mxGeometry as="geometry" x="0" y="48" width="360" height="212" />
+        </mxCell>
+        <mxCell id="purchases" value="" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=#f4f8f9;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1360" y="160" width="400" height="310" />
+        </mxCell>
+        <mxCell id="purchases-header" value="purchases" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="purchases">
+          <mxGeometry as="geometry" x="0" y="0" width="400" height="48" />
+        </mxCell>
+        <mxCell id="purchases-attributes" value="PK purchase_id: UINT AI&#10;FK client_id: UINT&#10;FK screening_id: UINT&#10;FK payment_method_id: UINT&#10;   quantity: INT&#10;   unit_price: D(12,2)&#10;   total_amount: D(12,2)&#10;   purchased_at: DATETIME" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=16;fontFamily=Courier;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="purchases">
+          <mxGeometry as="geometry" x="0" y="48" width="400" height="262" />
+        </mxCell>
+        <mxCell id="R1" value="" edge="1" parent="1" source="users" target="client_profiles" style="exitX=1.0;exitY=0.42105263157894735;entryX=0.0;entryY=0.5;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="400" y="240" />
+              <mxPoint x="480" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R1-label" value="R1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="400" y="190" width="80" height="44" />
+        </mxCell>
+        <mxCell id="R2" value="" edge="1" parent="1" source="client_profiles" target="payment_methods" style="exitX=1.0;exitY=0.625;entryX=0.0;entryY=0.38461538461538464;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="840" y="260" />
+              <mxPoint x="920" y="260" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R2-label" value="R2" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="840" y="210" width="80" height="44" />
+        </mxCell>
+        <mxCell id="R3" value="" edge="1" parent="1" source="client_profiles" target="purchases" style="exitX=0.5;exitY=1.0;entryX=0.0;entryY=0.7096774193548387;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="660" y="320" />
+              <mxPoint x="660" y="530" />
+              <mxPoint x="1320" y="530" />
+              <mxPoint x="1320" y="380" />
+              <mxPoint x="1360" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R3-label" value="R3 / client purchases" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="780" y="480" width="250" height="44" />
+        </mxCell>
+        <mxCell id="R4" value="" edge="1" parent="1" source="payment_methods" target="purchases" style="exitX=1.0;exitY=0.46153846153846156;entryX=0.0;entryY=0.3870967741935484;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1280" y="280" />
+              <mxPoint x="1360" y="280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R4-label" value="R4" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1280" y="230" width="80" height="44" />
+        </mxCell>
+        <mxCell id="R5" value="" edge="1" parent="1" source="screenings" target="purchases" style="exitX=1.0;exitY=0.46153846153846156;entryX=0.5;entryY=1.0;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1280" y="780" />
+              <mxPoint x="1320" y="780" />
+              <mxPoint x="1320" y="570" />
+              <mxPoint x="1560" y="570" />
+              <mxPoint x="1560" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R5-label" value="R5 / screening purchases" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1400" y="575" width="300" height="44" />
+        </mxCell>
+        <mxCell id="R6" value="" edge="1" parent="1" source="theaters" target="screenings" style="exitX=0.0;exitY=0.3684210526315789;entryX=1.0;entryY=0.2692307692307692;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1360" y="730" />
+              <mxPoint x="1280" y="730" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R6-label" value="R6" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1280" y="680" width="80" height="44" />
+        </mxCell>
+        <mxCell id="R7" value="" edge="1" parent="1" source="languages" target="movies" style="exitX=1.0;exitY=0.38461538461538464;entryX=0.0;entryY=0.19230769230769232;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="400" y="710" />
+              <mxPoint x="480" y="710" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R7-label" value="R7" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="400" y="660" width="80" height="44" />
+        </mxCell>
+        <mxCell id="R8" value="" edge="1" parent="1" source="movies" target="movie_languages" style="exitX=0.5;exitY=1.0;entryX=0.5;entryY=0.0;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="660" y="920" />
+              <mxPoint x="660" y="1100" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R8-label" value="R8 / available languages" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="500" y="980" width="300" height="44" />
+        </mxCell>
+        <mxCell id="R9" value="" edge="1" parent="1" source="languages" target="movie_languages" style="exitX=0.5;exitY=1.0;entryX=0.0;entryY=0.46153846153846156;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="220" y="790" />
+              <mxPoint x="220" y="1160" />
+              <mxPoint x="480" y="1160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R9-label" value="R9" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="280" y="1110" width="80" height="44" />
+        </mxCell>
+        <mxCell id="R10" value="" edge="1" parent="1" source="movies" target="movie_genres" style="exitX=0.0;exitY=0.7692307692307693;entryX=0.5;entryY=1.0;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="480" y="860" />
+              <mxPoint x="440" y="860" />
+              <mxPoint x="440" y="1280" />
+              <mxPoint x="1100" y="1280" />
+              <mxPoint x="1100" y="1230" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R10-label" value="R10 / movie genres" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="680" y="1240" width="240" height="44" />
+        </mxCell>
+        <mxCell id="R11" value="" edge="1" parent="1" source="genres" target="movie_genres" style="exitX=0.0;exitY=0.46153846153846156;entryX=1.0;entryY=0.46153846153846156;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="1360" y="1160" />
+              <mxPoint x="1280" y="1160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R11-label" value="R11" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1280" y="1110" width="80" height="44" />
+        </mxCell>
+        <mxCell id="R12" value="" edge="1" parent="1" source="movie_languages" target="screenings" style="exitX=1.0;exitY=0.46153846153846156;entryX=0.5;entryY=1.0;exitPerimeter=0;entryPerimeter=0;edgeStyle=none;html=0;endArrow=block;endFill=1;strokeColor=#467486;strokeWidth=2;">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="840" y="1160" />
+              <mxPoint x="880" y="1160" />
+              <mxPoint x="880" y="1000" />
+              <mxPoint x="1100" y="1000" />
+              <mxPoint x="1100" y="920" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R12-label" value="R12 / selected available language" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=17;fontFamily=Helvetica;fontColor=#18313b;fillColor=#ffffff;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="1010" y="1010" width="410" height="44" />
+        </mxCell>
+        <mxCell id="legend" value="PK primary key | FK foreign key | UQ unique | AI auto-increment | =n default&#10;UINT = INT UNSIGNED; VC(n) = VARCHAR(n); D(p,s) = DECIMAL(p,s). All attributes NOT NULL.&#10;Arrows: referenced parent -&gt; dependent child. R1-R12 cardinalities and enforcement: page 2." style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=18;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="1310" width="1740" height="90" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="page-2" name="02 - Participation and enforcement">
+    <mxGraphModel page="1" pageScale="1" pageWidth="1800" pageHeight="1400" grid="1" gridSize="10">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="PARTICIPATION / Constraints and enforcement" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=34;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="24" width="1740" height="68" />
+        </mxCell>
+        <mxCell id="intro" value="Every child references exactly ONE parent per listed relation (mandatory FK)." style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=24;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="92" width="1740" height="48" />
+        </mxCell>
+        <mxCell id="columns" value="ID     Referenced parent -&gt; dependent child             Children per parent / FK meaning" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=23;fontFamily=Helvetica-Bold;fontColor=#ffffff;fillColor=#173f50;strokeColor=#b8ccd0;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="150" width="1740" height="46" />
+        </mxCell>
+        <mxCell id="rel-R1" value="R1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="200" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R1-pair" value="users -&gt; client_profiles" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="200" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R1-card" value="0..1" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="200" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R1-meaning" value="user_id -&gt; users.user_id; exactly 1 iff client*" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="200" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R2" value="R2" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="242" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R2-pair" value="client_profiles -&gt; payment_methods" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="242" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R2-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="242" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R2-meaning" value="client_id -&gt; client_profiles.user_id" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="242" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R3" value="R3" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="284" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R3-pair" value="client_profiles -&gt; purchases" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="284" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R3-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="284" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R3-meaning" value="client_id -&gt; client_profiles.user_id" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="284" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R4" value="R4" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="326" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R4-pair" value="payment_methods -&gt; purchases" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="326" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R4-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="326" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R4-meaning" value="payment_method_id; retained history" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="326" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R5" value="R5" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="368" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R5-pair" value="screenings -&gt; purchases" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="368" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R5-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="368" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R5-meaning" value="screening_id; each purchase has one screening" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="368" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R6" value="R6" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="410" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R6-pair" value="theaters -&gt; screenings" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="410" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R6-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="410" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R6-meaning" value="theater_id; each screening has one theater" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="410" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R7" value="R7" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="452" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R7-pair" value="languages -&gt; movies (original)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="452" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R7-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="452" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R7-meaning" value="original_language_id; one original per movie" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="452" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R8" value="R8" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="494" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R8-pair" value="movies -&gt; movie_languages" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="494" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R8-card" value="1..N*" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="494" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R8-meaning" value="movie_id; unique (movie_id, language_id)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="494" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R9" value="R9" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="536" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R9-pair" value="languages -&gt; movie_languages" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="536" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R9-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="536" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R9-meaning" value="language_id; original must be available*" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="536" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R10" value="R10" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="578" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R10-pair" value="movies -&gt; movie_genres" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="578" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R10-card" value="1..N*" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="578" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R10-meaning" value="movie_id; unique (movie_id, genre_id)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="578" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R11" value="R11" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="620" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R11-pair" value="genres -&gt; movie_genres" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="620" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R11-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="620" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R11-meaning" value="genre_id; movie/genre many-to-many via bridge" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="620" width="884" height="42" />
+        </mxCell>
+        <mxCell id="rel-R12" value="R12" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="662" width="100" height="42" />
+        </mxCell>
+        <mxCell id="rel-R12-pair" value="movie_languages -&gt; screenings" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="128" y="662" width="620" height="42" />
+        </mxCell>
+        <mxCell id="rel-R12-card" value="0..N" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="748" y="662" width="140" height="42" />
+        </mxCell>
+        <mxCell id="rel-R12-meaning" value="composite (movie_id, language_id) FK" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="888" y="662" width="884" height="42" />
+        </mxCell>
+        <mxCell id="mandatory" value="* Required business minimum, validated by seed/auth; FK alone permits zero children.&#10;Each movie has one or more available languages and genres; the original language is included.&#10;A client has exactly one profile; an admin has none. No cross-table CHECK claims." style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=22;fontFamily=Helvetica;fontColor=#18313b;fillColor=#eef5f6;strokeColor=#b8ccd0;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="720" width="1740" height="110" />
+        </mxCell>
+        <mxCell id="local-title" value="SQL / local enforcement" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=28;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="846" width="840" height="54" />
+        </mxCell>
+        <mxCell id="local" value="All tables: InnoDB, utf8mb4, NOT NULL attributes.&#10;FK updates/deletes: RESTRICT. IDs: unsigned INT.&#10;Email: UNIQUE, utf8mb4_bin; language/genre names: UNIQUE.&#10;Role: client/admin; payment type: credit/debit.&#10;Card: 13-19 ASCII digits; duplicate cards allowed.&#10;Flags: 0 or 1; capacity/runtime/quantity &gt; 0.&#10;Sold count/unit price/total &gt;= 0.&#10;Total = unit_price * quantity; money D(12,2).&#10;Services normalize email/card and reject empty strings.&#10;DATETIME: Europe/Rome wall time, converted by services." style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="900" width="840" height="280" />
+        </mxCell>
+        <mxCell id="service-title" value="Services / cross-row rules" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=28;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="846" width="852" height="54" />
+        </mxCell>
+        <mxCell id="services" value="Seed/auth: role/profile and minimum-child completeness.&#10;Booking: stored principal; payment owner/active state;&#10;screening lock, capacity and counter/history consistency.&#10;Scheduling: theater lock; no overlapping screenings;&#10;future start, minute precision and opening hours.&#10;Helpers borrow the caller's transaction; no hidden commit.&#10;Seed reconciliation: sold counters equal purchase totals.&#10;Retain purchase references: deactivate, never delete.&#10;Direct ad-hoc writes are outside application guarantees." style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="920" y="900" width="852" height="280" />
+        </mxCell>
+        <mxCell id="indexes-title" value="Lookup / history indexes (plus primary, unique and remaining FK indexes)" style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=26;fontFamily=Helvetica-Bold;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="1186" width="1740" height="50" />
+        </mxCell>
+        <mxCell id="indexes" value="screenings: (theater_id, starts_at), (movie_id, starts_at), (starts_at, screening_id)&#10;purchases: (client_id, purchased_at, purchase_id), (screening_id); payment_methods: (client_id, active)&#10;movie_languages: (language_id, movie_id); movie_genres: (genre_id, movie_id)&#10;Design correspondence review by all five teammates remains required; this artifact is not approval." style="rounded=0;whiteSpace=wrap;html=0;align=left;verticalAlign=top;spacing=12;fontSize=20;fontFamily=Helvetica;fontColor=#18313b;fillColor=none;strokeColor=none;fontStyle=0;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="28" y="1240" width="1740" height="130" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
