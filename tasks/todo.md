@@ -174,7 +174,7 @@ confirms PR #44 merged on 14 November. This supersedes the pending merge notes.
 T03 is DONE. C01 verifies the integrated T01–T03 prefix, not later features.
 
 ## C01 — Runtime checkpoint
-- [ ] **IN REVIEW · Owner A + all · Depends: T01–T03**
+- [x] **DONE · Owner A + all · Depends: T01–T03**
 
 **Acceptance/verification:** Review contracts; run `python -m pip check`, `docker compose --profile test config --quiet`, `python -m pytest -q`, both plan Ruff commands and `git diff --check`. Confirm independent healthy services and tracked design documents. Record pins and results.
 
@@ -222,6 +222,17 @@ T03 is DONE. C01 verifies the integrated T01–T03 prefix, not later features.
 - Evidence commit: `f561ae0`; PR #46 (`task/C01-runtime-checkpoint`), refs #4.
   Manual diff review: ledger-only C01 evidence and direct T03 merge reconciliation;
   no implementation blockers found. Required checkpoint approval remains pending.
+
+**Release update — 16 November 2026:** This supersedes the pending-release notes
+above. Parallel read-only reviewer, security-auditor and test-engineer reviews
+returned APPROVE/GO/ADEQUATE with no blockers. Both CI runs passed at `b948d98`.
+Historical diff verification by subagents was limited and relied partly on
+parent-supplied evidence; this limitation was disclosed in the consolidated GO.
+The user then explicitly approved release ("ok go"); no individual student
+signoff is inferred. C01 is DONE; PR #46 may merge after CI on this ledger update.
+Optional follow-ups, not C01 blockers: reconcile stale contract approval wording;
+preserve the original failure when rollback also fails; add grant-option refusal
+and committed-work preservation regression tests. No next task started.
 
 ## T04 — Deliver ER model and enforceable relational schema
 - [ ] **TODO · M · Owner A · Reviewer B · Depends: T03 · SC1, SC2**
