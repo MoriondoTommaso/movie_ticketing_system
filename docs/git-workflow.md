@@ -89,9 +89,9 @@ Never include `.env`, real credentials, personal data or unrelated changes.
 Use clear messages such as `fix: release booking locks after failure` or
 `docs: explain fresh database setup`.
 
-Record actual verification commands and results. The project is currently a
-scaffold: pytest/Ruff/MySQL commands become usable as their prerequisite tasks
-land. A missing tool or test is not a passing check. Use the
+Record actual verification commands and results. Run the
+[local CI checks](../README.md#continuous-integration) before opening a PR.
+A missing tool or test is not a passing check. Use the
 [verification contract](../tasks/plan.md#verification-command-contract).
 
 ## 5. Push and open a pull request
@@ -208,8 +208,9 @@ Tommaso or Eleonora can merge reviewed PRs after required checks pass. Neither
 self-approves; use the review routing above, including shared-file reviews.
 Choose **Squash and merge** when available to keep one task-level commit on
 `main`; retain the task ID in its title. Delete the merged remote branch using
-GitHub's **Delete branch** button. These are team conventions, not a claim that
-branch protections or automatic CI are already configured.
+GitHub's **Delete branch** button. CI runs automatically on pushes and PRs;
+requiring its status check before merge needs an administrator-configured branch
+ruleset, as described in the [CI guide](../README.md#continuous-integration).
 
 Refresh your local copy after merge:
 
