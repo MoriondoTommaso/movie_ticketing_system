@@ -7,7 +7,11 @@ CREATE TABLE users (
     user_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(254) COLLATE utf8mb4_bin NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    role VARCHAR(10) NOT NULL
+    role VARCHAR(10) NOT NULL,
+    CONSTRAINT uq_user_email UNIQUE (email),
+    CONSTRAINT ck_user_role CHECK (
+        role COLLATE utf8mb4_0900_as_cs IN ('client', 'admin')
+    )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE client_profiles (
@@ -25,6 +29,14 @@ CREATE TABLE payment_methods (
     card_number VARCHAR(19) NOT NULL,
     billing_address VARCHAR(255) NOT NULL,
     active BOOLEAN NOT NULL DEFAULT 1,
+    CONSTRAINT ck_payment_type CHECK (
+        payment_type COLLATE utf8mb4_0900_as_cs IN ('credit', 'debit')
+    ),
+    CONSTRAINT ck_payment_card CHECK (
+        CHAR_LENGTH(card_number) BETWEEN 13 AND 19
+        AND NOT REGEXP_LIKE(card_number, '[^0-9]', 'c')
+    ),
+    CONSTRAINT ck_payment_active CHECK (active IN (0, 1)),
     CONSTRAINT fk_payment_client FOREIGN KEY (client_id)
         REFERENCES client_profiles (user_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -33,17 +45,22 @@ CREATE TABLE theaters (
     theater_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     capacity INT NOT NULL,
     supports_3d BOOLEAN NOT NULL,
-    enhanced_sound BOOLEAN NOT NULL
+    enhanced_sound BOOLEAN NOT NULL,
+    CONSTRAINT ck_theater_capacity CHECK (capacity > 0),
+    CONSTRAINT ck_theater_3d CHECK (supports_3d IN (0, 1)),
+    CONSTRAINT ck_theater_sound CHECK (enhanced_sound IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE languages (
     language_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(60) NOT NULL
+    name VARCHAR(60) NOT NULL,
+    CONSTRAINT uq_language_name UNIQUE (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE genres (
     genre_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(60) NOT NULL
+    name VARCHAR(60) NOT NULL,
+    CONSTRAINT uq_genre_name UNIQUE (name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE movies (
@@ -53,6 +70,7 @@ CREATE TABLE movies (
     runtime_minutes INT NOT NULL,
     original_language_id INT UNSIGNED NOT NULL,
     description TEXT NOT NULL,
+    CONSTRAINT ck_movie_runtime CHECK (runtime_minutes > 0),
     CONSTRAINT fk_movie_original_language FOREIGN KEY (original_language_id)
         REFERENCES languages (language_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -84,6 +102,7 @@ CREATE TABLE screenings (
     language_id INT UNSIGNED NOT NULL,
     starts_at DATETIME NOT NULL,
     sold_tickets INT NOT NULL DEFAULT 0,
+    CONSTRAINT ck_screening_sold CHECK (sold_tickets >= 0),
     CONSTRAINT fk_screening_available_language FOREIGN KEY (movie_id, language_id)
         REFERENCES movie_languages (movie_id, language_id)
         ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -100,6 +119,11 @@ CREATE TABLE purchases (
     unit_price DECIMAL(12,2) NOT NULL,
     total_amount DECIMAL(12,2) NOT NULL,
     purchased_at DATETIME NOT NULL,
+    CONSTRAINT ck_purchase_quantity CHECK (quantity > 0),
+    CONSTRAINT ck_purchase_price CHECK (unit_price >= 0),
+    CONSTRAINT ck_purchase_total CHECK (
+        total_amount >= 0 AND total_amount = unit_price * quantity
+    ),
     CONSTRAINT fk_purchase_client FOREIGN KEY (client_id)
         REFERENCES client_profiles (user_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_purchase_screening FOREIGN KEY (screening_id)

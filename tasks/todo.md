@@ -255,6 +255,11 @@ Ruff lint/format and whitespace checks passed. Constraints/indexes and ER
 deliverables follow in scoped slices; no later task started.
 Isolated verifier: `db-project-t04-20261116`, `.env.example` plus exported
 `DB_PORT=23506 TEST_DB_PORT=23507`; existing `.env` preserved.
+Foundation commit: `206e083`. Slice 2 RED: 25 missing CHECK/UNIQUE enforcement
+failures (three existing structure/association tests passed). GREEN: 28 tests
+passed after role/type, ASCII card format, boolean/numeric/amount constraints and
+unique email/language/genre constraints. SQL error codes distinguish intended
+constraint refusal from unrelated failures. Ruff lint/format and diff checks pass.
 
 ## T05 — Implement the authoritative ticket price
 - [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**
