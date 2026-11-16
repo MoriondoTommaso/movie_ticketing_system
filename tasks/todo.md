@@ -303,6 +303,10 @@ has the needed leading columns. No cross-row enforcement is claimed.
   the initial ASCII-encoded PDF was treated as text by Git. Re-exported using
   binary Flate streams; `pdfinfo` validates two pages, extracted text is identical,
   and base-to-tree whitespace checks now pass. No schema/test behavior changed.
+- Artifact export commit: `daed6cc`. PR #47 (`task/T04-relational-schema`), refs
+  issue #5; Eleonora requested as reviewer. Manual PR diff: five scoped files,
+  no implementation blockers found. T04 remains IN REVIEW pending the explicit
+  ER/team and checkpoint approvals; no next task started.
 
 ## T05 — Implement the authoritative ticket price
 - [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**
