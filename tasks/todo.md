@@ -112,7 +112,7 @@ This supersedes the pending-review/merge notes above. T02 is DONE; its dependent
 tasks may start when their other prerequisites are met. No next task started here.
 
 ## T03 — Make connections and isolated database tests usable
-- [ ] **IN REVIEW · M · Owner Tommaso, Eleonora fixture review · Reviewer Eleonora · Depends: T02 · SC2, SC8**
+- [x] **DONE · M · Owner Tommaso, Eleonora fixture review · Reviewer Eleonora · Depends: T02 · SC2, SC8**
 
 **Files:** `src/database.py`, `tests/conftest.py`, `tests/integration/test_database.py`.
 
@@ -169,10 +169,70 @@ tasks may start when their other prerequisites are met. No next task started her
   confirmed retained with `docker volume inspect`. No active verification
   containers or development-table changes left behind.
 
+**Merge update — 16 November 2026:** User confirmed T03 completed; GitHub
+confirms PR #44 merged on 14 November. This supersedes the pending merge notes.
+T03 is DONE. C01 verifies the integrated T01–T03 prefix, not later features.
+
 ## C01 — Runtime checkpoint
-- [ ] **TODO · Owner A + all · Depends: T01–T03**
+- [x] **DONE · Owner A + all · Depends: T01–T03**
 
 **Acceptance/verification:** Review contracts; run `python -m pip check`, `docker compose --profile test config --quiet`, `python -m pytest -q`, both plan Ruff commands and `git diff --check`. Confirm independent healthy services and tracked design documents. Record pins and results.
+
+**C01 evidence — 16 November 2026 (T01–T03 runtime prefix):**
+- Base: `88676e4` (`origin/main`); branch `task/C01-runtime-checkpoint`.
+  T01 user approval and T02 merge recorded above; T03 merged in #44.
+  CI follow-up #45 is also merged. Only this ledger changes for C01.
+- Verification-only task: no behavior changed, so no artificial RED test.
+  `test-driven-development` loaded; `incremental-implementation` unavailable.
+- Reviewed `docs/contracts.md` connection/transaction ownership against
+  `src/database.py` and T03 fixture/test evidence: explicit independent settings,
+  caller-owned transactions, no implicit commit, guarded opt-in test reset.
+  Future schema/service contracts remain future tasks, not C01 runtime claims.
+  Draft headings in T01 documents are superseded by the recorded user approval;
+  proposed documentation cleanup is separate, not implemented here.
+- PASS: `.venv/bin/python -m pip check`;
+  `docker compose --env-file .env.example --profile test config --quiet`;
+  `.venv/bin/python -m pytest -q`: **43 passed, zero skipped**;
+  `.venv/bin/python -m ruff check src tests`;
+  `.venv/bin/python -m ruff format --check src tests` (four files);
+  `git diff --check`.
+  The full suite includes all currently delivered integration tests; absent
+  unit/concurrency scopes were not reported as passing.
+- PASS: `pip wheel --no-deps` into approved temporary storage.
+  No application compilation or configured type-checker gate exists for C01.
+- Pins/runtime: Python 3.13.13, connector 26.10.0, dotenv 1.2.4,
+  pytest 9.2.0, Ruff 0.17.5, Docker 29.7.2, Compose v5.5.1;
+  build backend setuptools==84.2.1 in isolated build metadata.
+  A diagnostic querying setuptools in the runtime venv failed because it is
+  build-isolated, not a runtime dependency; wheel build passed. Corrected the
+  version diagnostic to inspect runtime dependencies only; no package changes.
+- Live project `db-project-c01-20261116`, `.env.example` plus exported
+  `DB_PORT=23406 TEST_DB_PORT=23407`; existing `.env` untouched.
+  Both services healthy with distinct server UUIDs, databases, accounts, ports,
+  networks and volumes; MySQL 8.4.13 / InnoDB / REPEATABLE-READ on each.
+  SHOW GRANTS limited each account to its own schema (plus global USAGE).
+  Image digest: `sha256:a81d043930e51745522bd5c430961cf8286f0a23f0a9a2a6e0108f7ea71b0902`.
+  Shutdown used `down` without `-v`; retained volumes, no development resets.
+- PASS: `git ls-files --error-unmatch` for contracts, assumptions, fixtures,
+  contributions and SPEC. Intentional design documents are tracked.
+- Release pending: `/checkpoint` is unavailable in this session. Manual scoped
+  diff review can be recorded, but is not the requested independent checkpoint
+  approval or reviewing student's release. Do not merge until that gate passes.
+  No next task started.
+- Evidence commit: `f561ae0`; PR #46 (`task/C01-runtime-checkpoint`), refs #4.
+  Manual diff review: ledger-only C01 evidence and direct T03 merge reconciliation;
+  no implementation blockers found. Required checkpoint approval remains pending.
+
+**Release update — 16 November 2026:** This supersedes the pending-release notes
+above. Parallel read-only reviewer, security-auditor and test-engineer reviews
+returned APPROVE/GO/ADEQUATE with no blockers. Both CI runs passed at `b948d98`.
+Historical diff verification by subagents was limited and relied partly on
+parent-supplied evidence; this limitation was disclosed in the consolidated GO.
+The user then explicitly approved release ("ok go"); no individual student
+signoff is inferred. C01 is DONE; PR #46 may merge after CI on this ledger update.
+Optional follow-ups, not C01 blockers: reconcile stale contract approval wording;
+preserve the original failure when rollback also fails; add grant-option refusal
+and committed-work preservation regression tests. No next task started.
 
 ## T04 — Deliver ER model and enforceable relational schema
 - [ ] **TODO · M · Owner A · Reviewer B · Depends: T03 · SC1, SC2**
