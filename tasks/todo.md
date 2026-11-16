@@ -299,6 +299,10 @@ has the needed leading columns. No cross-row enforcement is claimed.
   PR checkpoint approval. `/checkpoint` and `incremental-implementation` are
   unavailable in this session; TDD skill already loaded. Manual diff review
   does not substitute for the required approvals. Do not merge until released.
+- ER/evidence commit: `e6e496b`. Whole-branch whitespace review detected that
+  the initial ASCII-encoded PDF was treated as text by Git. Re-exported using
+  binary Flate streams; `pdfinfo` validates two pages, extracted text is identical,
+  and base-to-tree whitespace checks now pass. No schema/test behavior changed.
 
 ## T05 — Implement the authoritative ticket price
 - [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**
