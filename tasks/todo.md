@@ -260,6 +260,13 @@ failures (three existing structure/association tests passed). GREEN: 28 tests
 passed after role/type, ASCII card format, boolean/numeric/amount constraints and
 unique email/language/genre constraints. SQL error codes distinguish intended
 constraint refusal from unrelated failures. Ruff lint/format and diff checks pass.
+Constraint commit: `6d642be`. Slice 3 RED: required lookup/history/reverse indexes
+missing (44 other cases passed). GREEN after explicit indexes: 45 passed.
+Coverage includes every FK path, existing-but-unavailable screening language,
+payment deletion refused while deactivation retains history, minimum valid
+counts, zero amounts, default active state, both card-length bounds and duplicate
+synthetic card numbers. Auto-created FK indexes remain where no explicit index
+has the needed leading columns. No cross-row enforcement is claimed.
 
 ## T05 — Implement the authoritative ticket price
 - [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**

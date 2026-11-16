@@ -37,6 +37,7 @@ CREATE TABLE payment_methods (
         AND NOT REGEXP_LIKE(card_number, '[^0-9]', 'c')
     ),
     CONSTRAINT ck_payment_active CHECK (active IN (0, 1)),
+    INDEX ix_payment_client_active (client_id, active),
     CONSTRAINT fk_payment_client FOREIGN KEY (client_id)
         REFERENCES client_profiles (user_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -79,6 +80,7 @@ CREATE TABLE movie_languages (
     movie_id INT UNSIGNED NOT NULL,
     language_id INT UNSIGNED NOT NULL,
     PRIMARY KEY (movie_id, language_id),
+    INDEX ix_available_language_movie (language_id, movie_id),
     CONSTRAINT fk_available_movie FOREIGN KEY (movie_id)
         REFERENCES movies (movie_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_available_language FOREIGN KEY (language_id)
@@ -89,6 +91,7 @@ CREATE TABLE movie_genres (
     movie_id INT UNSIGNED NOT NULL,
     genre_id INT UNSIGNED NOT NULL,
     PRIMARY KEY (movie_id, genre_id),
+    INDEX ix_genre_movie (genre_id, movie_id),
     CONSTRAINT fk_genre_movie FOREIGN KEY (movie_id)
         REFERENCES movies (movie_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_movie_genre FOREIGN KEY (genre_id)
@@ -103,6 +106,9 @@ CREATE TABLE screenings (
     starts_at DATETIME NOT NULL,
     sold_tickets INT NOT NULL DEFAULT 0,
     CONSTRAINT ck_screening_sold CHECK (sold_tickets >= 0),
+    INDEX ix_screening_theater_start (theater_id, starts_at),
+    INDEX ix_screening_movie_start (movie_id, starts_at),
+    INDEX ix_screening_start_id (starts_at, screening_id),
     CONSTRAINT fk_screening_available_language FOREIGN KEY (movie_id, language_id)
         REFERENCES movie_languages (movie_id, language_id)
         ON DELETE RESTRICT ON UPDATE RESTRICT,
@@ -124,6 +130,8 @@ CREATE TABLE purchases (
     CONSTRAINT ck_purchase_total CHECK (
         total_amount >= 0 AND total_amount = unit_price * quantity
     ),
+    INDEX ix_purchase_client_history (client_id, purchased_at, purchase_id),
+    INDEX ix_purchase_screening (screening_id),
     CONSTRAINT fk_purchase_client FOREIGN KEY (client_id)
         REFERENCES client_profiles (user_id) ON DELETE RESTRICT ON UPDATE RESTRICT,
     CONSTRAINT fk_purchase_screening FOREIGN KEY (screening_id)

@@ -122,3 +122,90 @@ def test_unique_values_and_associations_reject_duplicates(populated_schema, stat
         with pytest.raises(mysql.connector.IntegrityError) as error:
             cursor.execute(statement)
         assert error.value.errno == 1062
+
+
+@pytest.mark.parametrize(
+    "statement",
+    [
+        "INSERT INTO client_profiles VALUES (99, 'Missing user', 'Synthetic')",
+        "UPDATE payment_methods SET client_id = 99",
+        "UPDATE movies SET original_language_id = 99",
+        "INSERT INTO movie_languages VALUES (99, 1)",
+        "INSERT INTO movie_languages VALUES (1, 99)",
+        "INSERT INTO movie_genres VALUES (99, 1)",
+        "INSERT INTO movie_genres VALUES (1, 99)",
+        "UPDATE screenings SET theater_id = 99",
+        "UPDATE screenings SET movie_id = 99",
+        "UPDATE screenings SET language_id = 99",
+        # Language 2 exists, but is not available for this movie.
+        "UPDATE screenings SET language_id = 2",
+        "UPDATE purchases SET client_id = 99",
+        "UPDATE purchases SET screening_id = 99",
+        "UPDATE purchases SET payment_method_id = 99",
+    ],
+)
+def test_missing_parents_and_unavailable_language_are_rejected(
+    populated_schema, statement
+):
+    with populated_schema.cursor() as cursor:
+        with pytest.raises(mysql.connector.IntegrityError) as error:
+            cursor.execute(statement)
+        assert error.value.errno == 1452
+
+
+def test_purchase_retains_payment_but_allows_deactivation(populated_schema):
+    with populated_schema.cursor() as cursor:
+        with pytest.raises(mysql.connector.IntegrityError) as error:
+            cursor.execute("DELETE FROM payment_methods WHERE payment_method_id = 1")
+        assert error.value.errno == 1451
+        cursor.execute(
+            "UPDATE payment_methods SET active = 0 WHERE payment_method_id = 1"
+        )
+        cursor.execute(
+            "SELECT p.purchase_id, m.active FROM purchases p JOIN payment_methods m "
+            "ON p.payment_method_id = m.payment_method_id"
+        )
+        assert cursor.fetchall() == [(1, 0)]
+
+
+def test_valid_boundaries_and_repeated_synthetic_cards(populated_schema):
+    with populated_schema.cursor() as cursor:
+        cursor.execute("UPDATE theaters SET capacity = 1, supports_3d = 1")
+        cursor.execute("UPDATE movies SET runtime_minutes = 1")
+        cursor.execute("UPDATE screenings SET sold_tickets = 0")
+        cursor.execute(
+            "UPDATE purchases SET quantity = 2, unit_price = 0, total_amount = 0"
+        )
+        cursor.execute(
+            "INSERT INTO payment_methods (client_id, payment_type, card_number, "
+            "billing_address) VALUES (1, 'debit', %s, 'Synthetic')",
+            ("0" * 19,),
+        )
+        cursor.execute("UPDATE payment_methods SET card_number = %s", ("0" * 13,))
+        cursor.execute("SELECT active, card_number FROM payment_methods ORDER BY 1")
+        assert cursor.fetchall() == [(1, "0" * 13), (1, "0" * 13)]
+        cursor.execute("SELECT quantity, unit_price, total_amount FROM purchases")
+        assert cursor.fetchone() == (2, 0, 0)
+
+
+def test_lookup_and_history_indexes(schema_connection):
+    expected = {
+        ("screenings", ("theater_id", "starts_at")),
+        ("screenings", ("movie_id", "starts_at")),
+        ("screenings", ("starts_at", "screening_id")),
+        ("purchases", ("client_id", "purchased_at", "purchase_id")),
+        ("purchases", ("screening_id",)),
+        ("payment_methods", ("client_id", "active")),
+        ("movie_languages", ("language_id", "movie_id")),
+        ("movie_genres", ("genre_id", "movie_id")),
+    }
+    with schema_connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT TABLE_NAME, INDEX_NAME, COLUMN_NAME FROM information_schema.statistics "
+            "WHERE TABLE_SCHEMA = DATABASE() ORDER BY TABLE_NAME, INDEX_NAME, SEQ_IN_INDEX"
+        )
+        indexes = {}
+        for table, index, column in cursor.fetchall():
+            indexes.setdefault((table, index), []).append(column)
+        actual = {(table, tuple(cols)) for (table, _), cols in indexes.items()}
+        assert expected <= actual
