@@ -347,6 +347,9 @@ with release/screening dates and both capability flags, returning Decimal.
   `/checkpoint` is not available as a session tool; independent checkpoint
   approval remains pending. Do not merge before that gate and green CI.
   No next task started.
+- Implementation commit: `cc4c767`; PR #48 (`task/T05-authoritative-pricing`).
+  Verification services stopped with `down` without `-v`; volumes retained.
+  T05 remains IN REVIEW pending checkpoint approval and CI.
 
 ## T06 — Populate coherent, reproducible movie data
 - [ ] **TODO · M · Owner E · Reviewer C · Depends: T04, T05 · SC2, SC10**
