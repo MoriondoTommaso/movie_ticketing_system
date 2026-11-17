@@ -309,16 +309,44 @@ has the needed leading columns. No cross-row enforcement is claimed.
   ER/team and checkpoint approvals; no next task started.
 
 ## T05 — Implement the authoritative ticket price
-- [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**
+- [ ] **IN REVIEW · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**
 
 **Files:** `src/pricing.py`, `tests/unit/test_pricing.py`.
 
 **Acceptance:**
-- [ ] Decimal pricing produces EUR 15/20/18/23 and discounted 12/16/14.40/18.40, applying discount after all theater surcharges and final two-decimal rounding.
-- [ ] Calendar-year boundary tests cover exactly two years, day before/after, and Feb 29 → Feb 28 anniversary; no dependence on wall-clock test execution date.
-- [ ] One typed service contract is usable by search and booking without display logic or duplicated formulas.
+- [x] Decimal pricing produces EUR 15/20/18/23 and discounted 12/16/14.40/18.40, applying discount after all theater surcharges and final two-decimal rounding.
+- [x] Calendar-year boundary tests cover exactly two years, day before/after, and Feb 29 → Feb 28 anniversary; no dependence on wall-clock test execution date.
+- [x] One typed service contract is usable by search and booking without display logic or duplicated formulas.
 
 **Verification:** `python -m pytest tests/unit/test_pricing.py -q` and focused Ruff.
+
+**T05 progress — 17 November 2026:** T01/T02 DONE; branch
+`task/T05-authoritative-pricing` from `origin/main` (`7ea976a`).
+Only the two task files and this ledger are in scope. TDD skill loaded;
+`incremental-implementation` unavailable. Frozen API: `calculate_unit_price`
+with release/screening dates and both capability flags, returning Decimal.
+
+**T05 verification — 17 November 2026 (SC5, SC8):**
+- RED 1: missing `src.pricing`; GREEN: four undiscounted capability cases.
+  RED 2: seven expected discount failures, ten passing cases; GREEN: 17 passed.
+  Tests check all eight prices and two-decimal exponent, exact/day-before/
+  day-after anniversary, Feb 29 → Feb 28, and a 730-day non-anniversary case.
+- PASS: `.venv/bin/python -m pytest tests/unit/test_pricing.py -q`: **17 passed**;
+  full `python -m pytest -q`: **105 passed, zero skipped**.
+  Full-suite subprocess used process environment plus `.env.example` and
+  DB_PORT=23606 / TEST_DB_PORT=23607. Initial environment-wrapper construction
+  failed with duplicate keyword arguments before pytest; corrected wrapper only.
+- Live verification: isolated Compose project `db-project-t05-20261117`,
+  `--env-file .env.example --profile test`, both db/test-db healthy;
+  existing `.env` preserved and no normal development database reset.
+- PASS: Ruff check and format check on `src tests`, `pip check`, wheel build
+  (`pip wheel --no-deps` into approved temporary storage), Compose config,
+  and `git diff --check`. No configured type checker or compilation gate.
+- Manual scoped diff review: pricing follows the frozen typed API, uses exact
+  Decimal arithmetic and explicit dates, with no I/O or duplicated display formula.
+  `/checkpoint` is not available as a session tool; independent checkpoint
+  approval remains pending. Do not merge before that gate and green CI.
+  No next task started.
 
 ## T06 — Populate coherent, reproducible movie data
 - [ ] **TODO · M · Owner E · Reviewer C · Depends: T04, T05 · SC2, SC10**
