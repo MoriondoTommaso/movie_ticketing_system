@@ -235,16 +235,78 @@ preserve the original failure when rollback also fails; add grant-option refusal
 and committed-work preservation regression tests. No next task started.
 
 ## T04 — Deliver ER model and enforceable relational schema
-- [ ] **TODO · M · Owner A · Reviewer B · Depends: T03 · SC1, SC2**
+- [ ] **IN REVIEW · M · Owner Tommaso · Reviewer Eleonora · Depends: T03 · SC1, SC2**
 
 **Files:** `schema.sql`, `docs/er-model-source.drawio`, `ER_diagram.pdf`, `tests/integration/test_schema.py`.
 
 **Acceptance:**
 - [ ] ER source/PDF captures all SPEC §5 attributes, identifiers, relationships, cardinalities and mandatory participation, including user/client distinction and movie languages/genres; all five review its correspondence to T01.
-- [ ] Clean schema load creates InnoDB tables, keys, relationship uniqueness, local positive/nonnegative checks and useful search/history indexes; unsupported cross-row rules are assigned to services, not falsely claimed as CHECK guarantees.
-- [ ] Real MySQL tests reject duplicate emails, invalid local numeric values, missing foreign keys and invalid movie-language associations; retained purchase references prevent destructive payment deletion. Document minimum-child rules that require seed/service validation.
+- [x] Clean schema load creates InnoDB tables, keys, relationship uniqueness, local positive/nonnegative checks and useful search/history indexes; unsupported cross-row rules are assigned to services, not falsely claimed as CHECK guarantees.
+- [x] Real MySQL tests reject duplicate emails, invalid local numeric values, missing foreign keys and invalid movie-language associations; retained purchase references prevent destructive payment deletion. Document minimum-child rules that require seed/service validation.
 
 **Verification:** Plan's clean `schema.sql` load command on the empty dev database; `python -m pytest tests/integration/test_schema.py -q`; manually open `ER_diagram.pdf` and compare every entity and constraint to the approved contract.
+
+**T04 progress — 16 November 2026:** Branch `task/T04-relational-schema` from
+merged C01 `1c72a42`. Scope is the four task files plus this ledger.
+TDD slice 1: 46-line schema test failed with missing schema.sql against real
+MySQL, then passed after creating the 11 mandatory-attribute InnoDB entities,
+primary/foreign keys and enforcement-boundary comments. Focused test: 1 passed;
+Ruff lint/format and whitespace checks passed. Constraints/indexes and ER
+deliverables follow in scoped slices; no later task started.
+Isolated verifier: `db-project-t04-20261116`, `.env.example` plus exported
+`DB_PORT=23506 TEST_DB_PORT=23507`; existing `.env` preserved.
+Foundation commit: `206e083`. Slice 2 RED: 25 missing CHECK/UNIQUE enforcement
+failures (three existing structure/association tests passed). GREEN: 28 tests
+passed after role/type, ASCII card format, boolean/numeric/amount constraints and
+unique email/language/genre constraints. SQL error codes distinguish intended
+constraint refusal from unrelated failures. Ruff lint/format and diff checks pass.
+Constraint commit: `6d642be`. Slice 3 RED: required lookup/history/reverse indexes
+missing (44 other cases passed). GREEN after explicit indexes: 45 passed.
+Coverage includes every FK path, existing-but-unavailable screening language,
+payment deletion refused while deactivation retains history, minimum valid
+counts, zero amounts, default active state, both card-length bounds and duplicate
+synthetic card numbers. Auto-created FK indexes remain where no explicit index
+has the needed leading columns. No cross-row enforcement is claimed.
+
+**T04 verification and review handoff — 16 November 2026:**
+- Reference/index slice commit: `598579f`. Final test refinement isolates
+  nonpositive quantity with zero price/total (so the amount equation cannot mask
+  a missing quantity CHECK), and verifies exact Decimal 12.34 * 3 = 37.02.
+- ER source: editable grouped entities and explicit routed FK edges in
+  `docs/er-model-source.drawio` (open in diagrams.net, export all pages as PDF).
+  `ER_diagram.pdf` has two vector pages: entities/attributes, then participation,
+  local constraints, indexes and service/seed enforcement. Source and PDF were
+  generated from the same layout using temporary tooling; no runtime dependency
+  added. Opened/read the PDF and visually inspected both rendered pages.
+- Live-schema/source comparison passed: all 11 entities, 45 attributes and
+  12 FK relationships correspond exactly; every FK uses RESTRICT on update/delete,
+  email uses utf8mb4_bin. Composite movie-language membership, client/admin
+  profile distinction, mandatory participation and business minimum-child rules
+  are explicit. Seed/services own cross-row rules as approved in T01.
+- PASS: focused `python -m pytest tests/integration/test_schema.py -q`:
+  **45 passed**; full `python -m pytest -q`: **88 passed, zero skipped**.
+  Tools use `.venv/bin/python`, Python 3.13.13 / MySQL 8.4.13.
+- PASS: guarded emptiness check of the isolated development schema, then plan's
+  `docker compose exec -T db ... < schema.sql` clean-load command (MYSQL_PWD
+  instead of a command-line password). No existing development schema overwritten.
+- PASS: `python -m pip check`; `python -m pip wheel --no-deps` into temporary
+  storage; `python -m ruff check src tests`;
+  `python -m ruff format --check src tests` (five files); `git diff --check`.
+  No configured type checker; no application compilation step.
+- Verification services shut down without `-v`; both task-scoped volumes
+  confirmed retained. No schema/data artifacts for T06 or later tasks added.
+- Pending acceptance: all five teammates' ER/T01 correspondence review and
+  PR checkpoint approval. `/checkpoint` and `incremental-implementation` are
+  unavailable in this session; TDD skill already loaded. Manual diff review
+  does not substitute for the required approvals. Do not merge until released.
+- ER/evidence commit: `e6e496b`. Whole-branch whitespace review detected that
+  the initial ASCII-encoded PDF was treated as text by Git. Re-exported using
+  binary Flate streams; `pdfinfo` validates two pages, extracted text is identical,
+  and base-to-tree whitespace checks now pass. No schema/test behavior changed.
+- Artifact export commit: `daed6cc`. PR #47 (`task/T04-relational-schema`), refs
+  issue #5; Eleonora requested as reviewer. Manual PR diff: five scoped files,
+  no implementation blockers found. T04 remains IN REVIEW pending the explicit
+  ER/team and checkpoint approvals; no next task started.
 
 ## T05 — Implement the authoritative ticket price
 - [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC5, SC8**
