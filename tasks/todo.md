@@ -352,7 +352,7 @@ with release/screening dates and both capability flags, returning Decimal.
   T05 remains IN REVIEW pending checkpoint approval and CI.
 
 ## T06 — Populate coherent, reproducible movie data
-- [ ] **TODO · M · Owner E · Reviewer C · Depends: T04, T05 · SC2, SC10**
+- [ ] **IN PROGRESS · M · Owner E · Reviewer C · Depends: T04, T05 · SC2, SC10**
 
 **Files:** `data.sql`, `tests/integration/test_seed.py`, `docs/fixtures.md`, `tests/conftest.py`.
 
@@ -362,6 +362,17 @@ with release/screening dates and both capability flags, returning Decimal.
 - [ ] Fixtures control dates and offer a repeatable relative-date demo seed policy; expose known report expectations including multiple purchases per screening, different capacities, and movies without screenings.
 
 **Verification:** Plan's clean `data.sql` load after schema; `python -m pytest tests/integration/test_seed.py -q`; manually reconcile fixture quantities and captured totals with the fixture document.
+
+**T06 progress — 17 November 2026:** Branch `task/T06-reproducible-seed`
+from `ef43e5f`. GitHub confirms T04 #47 and T05 #48 merged; T05 approved
+with successful CI, superseding its pending merge note above. TDD first:
+42-line seed tests fail because the opt-in seeded fixture is missing.
+Frozen T01 oracle: 12 screenings, eight purchases, anchor D=2026-11-23.
+TDD instructions retained; incremental-implementation skill unavailable.
+Fixture implementation exposed missing data.sql on real MySQL (RED), then
+two tests passed with shipped seed inventory, distinct salted scrypt hashes and
+49 tickets / EUR840.20 captured totals. Focused Ruff passes. Isolated verifier:
+`db-project-t06-20261117`, `.env.example`, ports 23706/23707; `.env` preserved.
 
 ## C02 — Foundation freeze
 - [ ] **TODO · Owner A + all · Depends: C01, T04–T06**

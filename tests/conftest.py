@@ -7,6 +7,7 @@ their artifacts; merely requesting a connection never resets or populates tables
 """
 
 from contextlib import ExitStack
+from pathlib import Path
 
 import pytest
 
@@ -123,6 +124,26 @@ def empty_database(reset_database):
         yield
     finally:
         reset_database()
+
+
+@pytest.fixture
+def schema_database(empty_database, db_connection):
+    """Opt-in schema load after guarded reset; no demo rows."""
+    with db_connection.cursor() as cursor:
+        cursor.execute((Path(__file__).resolve().parents[1] / "schema.sql").read_text())
+        while cursor.nextset():
+            pass
+    return db_connection
+
+
+@pytest.fixture
+def seeded_database(schema_database):
+    """Opt-in committed demo rows, visible to independent service connections."""
+    with schema_database.cursor() as cursor:
+        cursor.execute((Path(__file__).resolve().parents[1] / "data.sql").read_text())
+        while cursor.nextset():
+            pass
+    return schema_database
 
 
 @pytest.fixture
