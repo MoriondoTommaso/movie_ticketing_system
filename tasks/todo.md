@@ -400,6 +400,9 @@ two tests passed with shipped seed inventory, distinct salted scrypt hashes and
   Graph coverage is best-effort; SQL parse gaps were verified directly in source
   and by actual imports. `/checkpoint` remains unavailable, so independent
   checkpoint approval is pending. No merge or next task before that gate.
+- Verification/documentation commit: `51a72f5`; PR #49
+  (`task/T06-reproducible-seed`). Isolated services stopped using `down` without
+  `-v`, retaining volumes. T06 remains IN REVIEW pending checkpoint and CI.
 
 ## C02 — Foundation freeze
 - [ ] **TODO · Owner A + all · Depends: C01, T04–T06**
