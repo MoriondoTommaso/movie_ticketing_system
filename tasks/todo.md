@@ -490,7 +490,7 @@ Seeded live login remains C03 work. If an integration regression appears,
 revert PR #54 and rerun the focused and full checks.
 
 ## T09 — Let clients list and add their payment methods
-- [ ] **TODO · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
+- [ ] **BLOCKED · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
 
 **Files:** `src/payments.py`, `src/client.py`, `tests/unit/test_payment_validation.py`, `tests/integration/test_payments.py`.
 
@@ -500,6 +500,14 @@ revert PR #54 and rerun the focused and full checks.
 - [ ] Provide transaction-compatible payment lookup/validation on the caller's connection, with no implicit commit, so booking can lock and revalidate ownership/activity.
 
 **Verification:** `python -m pytest tests/unit/test_payment_validation.py tests/integration/test_payments.py -q`; manual `python -m src.main` → client → payment management → add/list and invalid-input recovery.
+
+**T09 blocker:** T06 and T08 are merged. The frozen contract (§§2, 4)
+requires `lock_valid_method` to lock the payment row with `FOR UPDATE` and
+defines `database.RetryableDatabaseError` for lock timeouts and deadlocks.
+Graph lookup and source inspection found `DatabaseError` but no shared
+retryable subclass. `src/database.py` is outside T09's allowed files.
+Await approval to add just that class there or to defer typed lock-error
+classification to a separate task. No implementation or test changes.
 
 ## C03 — First client flow checkpoint
 - [ ] **TODO · Owner B + all · Depends: C02, T07–T09**
