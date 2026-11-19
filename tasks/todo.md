@@ -405,9 +405,22 @@ two tests passed with shipped seed inventory, distinct salted scrypt hashes and
   `-v`, retaining volumes. T06 remains IN REVIEW pending checkpoint and CI.
 
 ## C02 — Foundation freeze
-- [ ] **TODO · Owner A + all · Depends: C01, T04–T06**
+- [x] **DONE · GO · Owner A + all · Depends: C01, T04–T06**
 
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; verify clean schema/data loads and ER review. All lanes sign the first schema/service/fixture contract revision; changes thereafter require affected-owner review. Confirm exact dependency/image versions and timezone.
+
+**Release decision:** The user approved freezing the schema, service and fixture
+contracts at `e869f32`, including the final three-page ER from #50. When asked
+whether to waive the five-lane signoff requirement for C02, the user replied
+“ok go”. This is user approval, not five individual signatures. Future contract
+changes still require affected-owner review.
+
+**Evidence:** [CI at the frozen revision](https://github.com/MoriondoTommaso/movie_ticketing_system/actions/runs/44482552846)
+passed all 111 tests and Ruff lint/format. `git diff --check 1c72a42 e869f32`
+passed. The clean MySQL 8.4.13 import reconciled 49 tickets, EUR840.20 and 220
+offered seats. Review confirmed the dependency and image pins, Europe/Rome
+timezone, and final ER-to-schema correspondence. The three checkpoint reviews
+found no blocking technical defect. Release tracked in #8.
 
 ## T07 — Authenticate preloaded users and enforce stored roles
 - [ ] **IN REVIEW · S · Owner B · Reviewer E · Depends: T04 · SC4, SC11**
