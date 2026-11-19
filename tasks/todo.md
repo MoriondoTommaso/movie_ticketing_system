@@ -410,14 +410,14 @@ two tests passed with shipped seed inventory, distinct salted scrypt hashes and
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; verify clean schema/data loads and ER review. All lanes sign the first schema/service/fixture contract revision; changes thereafter require affected-owner review. Confirm exact dependency/image versions and timezone.
 
 ## T07 — Authenticate preloaded users and enforce stored roles
-- [ ] **BLOCKED · S · Owner B · Reviewer E · Depends: T04 · SC4, SC11**
+- [ ] **IN REVIEW · S · Owner B · Reviewer E · Depends: T04 · SC4, SC11**
 
-**Files:** `src/auth.py`, `tests/integration/test_auth.py`.
+**Files:** `src/auth.py`, `tests/integration/test_auth.py`, `src/database.py` (user-approved shared auth contracts only).
 
 **Acceptance:**
-- [ ] Authentication trims/normalizes email, verifies the approved scrypt hash format, and returns a verified principal with the database role; invalid credentials fail consistently and inputs are bound parameters.
-- [ ] Direct role checks deny missing/invalid principals, clients calling administrator operations, and inappropriate admin-as-client requests according to the frozen contract; no interface-supplied role is accepted as authority.
-- [ ] Tests cover normalization/uniqueness, invalid password/email, malformed stored hashes and connection failure cleanup; service APIs neither prompt nor print secrets.
+- [x] Authentication trims/normalizes email, verifies the approved scrypt hash format, and returns a verified principal with the database role; invalid credentials fail consistently and inputs are bound parameters.
+- [x] Direct role checks deny missing/invalid principals, clients calling administrator operations, and inappropriate admin-as-client requests according to the frozen contract; no interface-supplied role is accepted as authority.
+- [x] Tests cover normalization/uniqueness, invalid password/email, malformed stored hashes and connection failure cleanup; service APIs neither prompt nor print secrets.
 
 **Verification:** `python -m pytest tests/integration/test_auth.py -q` with task-local accounts inserted into the isolated schema fixture; do not require T06's demo seed. C03 checks the shipped demo credentials separately.
 
@@ -433,6 +433,16 @@ Await explicit permission to include src/database.py in T07, or a separately
 approved prerequisite task providing these contracts. No implementation or
 tests changed; no RED commit. TDD skill already loaded; requested
 incremental-implementation remains unavailable. No next task started.
+
+**T07 resolution:** User approved adding `src/database.py` to T07. RED:
+focused tests failed to collect because `src.auth` did not exist. GREEN: nine
+initial cases, then 16 focused cases total. The shared verifier checks stored
+role and client profile on a borrowed connection without owning its transaction.
+Login verifies bounded scrypt hashes and releases its owned connection on
+success, refusal, and driver failure. Tests use task-local accounts, not demo seed.
+Full suite: **127 passed**. Ruff lint/format, `pip check`, wheel build and
+`git diff --check` passed. No configured type checker. Isolated Compose project
+`db-project-t07`, `.env.example`, ports 23806/23807. Checkpoint and CI pending.
 
 ## T08 — Open authenticated CLI sessions with role dispatch
 - [ ] **TODO · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
