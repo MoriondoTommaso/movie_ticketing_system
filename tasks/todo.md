@@ -691,6 +691,8 @@ authorization, optional date filter, and seat counts for seeded and newly
 created screenings. Both menu paths verified via seeded `python -m src.main`.
 Ruff, dependencies, wheel, and whitespace passed. No configured type checker.
 Checkpoint pending; user owns the merge.
+Implementation: `cd7a401`; PR #59. Checkpoint reviews launched. Isolated
+Compose services stopped without deleting volumes.
 
 ## T15 — Buy multiple tickets atomically through the CLI
 - [ ] **TODO · M · Owner D · Reviewer A · Depends: T05, T06, T09, T10, T11 · SC6, SC8, SC11**
