@@ -129,15 +129,14 @@ def add_method(
         )
 
 
-def lock_valid_method(
+def _validate_method_id(payment_method_id: int) -> None:
+    if type(payment_method_id) is not int or not 0 < payment_method_id < 2**32:
+        raise ValidationError("Invalid payment method")
+
+
+def _lock_owned_method(
     conn: MySQLConnectionAbstract, principal: Principal, payment_method_id: int
 ) -> PaymentMethod:
-    """Lock an owned active method on the caller's transaction, after screening."""
-    require_role(principal, "client")
-    invalid = "Invalid payment method"
-    if type(payment_method_id) is not int or not 0 < payment_method_id < 2**32:
-        raise ValidationError(invalid)
-    database.verify_principal(conn, principal, "client")
     try:
         with conn.cursor() as cursor:
             cursor.execute(
@@ -148,6 +147,39 @@ def lock_valid_method(
             row = cursor.fetchone()
     except Error as exc:
         raise _database_error(exc) from exc
-    if row is None or not row[5]:
-        raise ValidationError(invalid)
+    if row is None:
+        raise ValidationError("Invalid payment method")
     return _view(*row)
+
+
+def lock_valid_method(
+    conn: MySQLConnectionAbstract, principal: Principal, payment_method_id: int
+) -> PaymentMethod:
+    """Lock an owned active method on the caller's transaction, after screening."""
+    require_role(principal, "client")
+    _validate_method_id(payment_method_id)
+    database.verify_principal(conn, principal, "client")
+    method = _lock_owned_method(conn, principal, payment_method_id)
+    if not method.active:
+        raise ValidationError("Invalid payment method")
+    return method
+
+
+def deactivate_method(
+    principal: Principal,
+    payment_method_id: int,
+    *,
+    connect: Connect = database.connect,
+) -> None:
+    """Permanently deactivate an owned method; already inactive is a no-op."""
+    require_role(principal, "client")
+    _validate_method_id(payment_method_id)
+    with _owned_connection(connect, principal, write=True) as conn:
+        method = _lock_owned_method(conn, principal, payment_method_id)
+        if method.active:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE payment_methods SET active = 0 "
+                    "WHERE payment_method_id = %s AND client_id = %s",
+                    (payment_method_id, principal.user_id),
+                )

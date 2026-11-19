@@ -2,7 +2,7 @@
 
 from src.auth import Principal
 from src.database import AuthorizationError, DatabaseError, ValidationError
-from src.payments import PaymentMethod, add_method, list_methods
+from src.payments import PaymentMethod, add_method, deactivate_method, list_methods
 
 
 def _show_method(method: PaymentMethod) -> None:
@@ -14,7 +14,9 @@ def _show_method(method: PaymentMethod) -> None:
 
 def _manage_payment_methods(principal: Principal) -> None:
     while True:
-        choice = input("1. List methods\n2. Add method\n0. Back\nChoice: ").strip()
+        choice = input(
+            "1. List methods\n2. Add method\n3. Deactivate method\n0. Back\nChoice: "
+        ).strip()
         if choice == "0":
             return
         try:
@@ -34,8 +36,19 @@ def _manage_payment_methods(principal: Principal) -> None:
                 added = add_method(principal, kind, number, address)
                 print("Added payment method:")
                 _show_method(added)
+            elif choice == "3":
+                raw_id = input("Method ID to permanently deactivate: ").strip()
+                if not raw_id.isascii() or not raw_id.isdecimal() or len(raw_id) > 10:
+                    print("Enter a positive method ID.")
+                    continue
+                method_id = int(raw_id)
+                if method_id == 0:
+                    print("Enter a positive method ID.")
+                    continue
+                deactivate_method(principal, method_id)
+                print("Payment method is inactive.")
             else:
-                print("Invalid choice. Enter 1, 2 or 0.")
+                print("Invalid choice. Enter 1, 2, 3 or 0.")
         except ValidationError as exc:
             print(exc)
         except DatabaseError:
