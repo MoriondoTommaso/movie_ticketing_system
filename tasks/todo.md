@@ -665,7 +665,7 @@ tests: mixed-runtime overlap and injected failure after insert. The synchronized
 two-writer race remains T22. T13 stays IN REVIEW until the user merges.
 
 ## T14 — Show schedule and remaining capacity to administrators
-- [ ] **TODO · M · Owner C · Reviewer D · Depends: T13 · SC7**
+- [ ] **BLOCKED · M · Owner C · Reviewer D · Depends: T13 · SC7**
 
 **Files:** `src/screenings.py`, `src/admin.py`, `tests/integration/test_schedule_views.py`.
 
@@ -675,6 +675,14 @@ two-writer race remains T22. T13 stays IN REVIEW until the user merges.
 - [ ] Tests demonstrate capacity against known sold/capacity fixtures and newly created screenings; displayed capacity is explicitly advisory for booking. Cross-feature search comparison is owned by C05.
 
 **Verification:** `python -m pytest tests/integration/test_schedule_views.py -q`; manual both admin views via `python -m src.main`.
+
+**T14 blocker:** T13 merged as `d28b51d` (#58), with both CI checks green.
+The existing T08 regression in `tests/unit/test_cli_auth.py` asserts the
+exact Add-screening-and-Exit menu before and after invalid input. T14 must
+add two visible actions, so the full suite requires updating that assertion.
+The test is outside T14's allowed files, and the previous exception covered
+T13 only. Await approval to update the expected menu while preserving the
+invalid-input recovery and exact-menu checks. No implementation changed.
 
 ## T15 — Buy multiple tickets atomically through the CLI
 - [ ] **TODO · M · Owner D · Reviewer A · Depends: T05, T06, T09, T10, T11 · SC6, SC8, SC11**
