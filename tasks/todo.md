@@ -583,6 +583,8 @@ The locking lookup read past a stale snapshot and held the screening lock
 until caller rollback. Seeded `python -m src.main` combined filter, empty
 result, and exit passed. Ruff lint/format, dependency and wheel build checks,
 and whitespace passed. No configured type checker. User owns the merge.
+Implementation: `1bd120d`; PR #57. Correctness, security, and test checkpoint
+reviews launched. Isolated Compose services stopped without deleting volumes.
 
 ## T12 — Specify valid screening intervals in executable rules
 - [ ] **IN REVIEW · S · Owner Eleonora · Reviewer Tommaso · Depends: T01, T02 · SC7**
