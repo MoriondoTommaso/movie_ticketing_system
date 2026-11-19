@@ -655,6 +655,12 @@ service boundary; no changes to T12. Checkpoint pending; only the user merges.
 Implementation: `bb7f80b`; PR #58. Checkpoint reviews launched. Isolated
 Compose services stopped without deleting volumes.
 
+**Checkpoint follow-up:** The T08 regression now asserts the actual menu
+prompts, not stdout alone. Scheduling tests cover malformed CLI input followed
+by successful creation, persisted selected IDs, and an existing language not
+offered for the selected movie. No service changes. Reverification: 26 focused
+and 218 full-suite passes on MySQL.
+
 ## T14 — Show schedule and remaining capacity to administrators
 - [ ] **TODO · M · Owner C · Reviewer D · Depends: T13 · SC7**
 

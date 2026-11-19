@@ -84,7 +84,14 @@ def test_exit_and_eof(monkeypatch, capsys, stage):
 
 
 def test_menu_recovers_without_advertising_unimplemented_features(monkeypatch, capsys):
-    script(monkeypatch, "email", "?", " 0 ")
+    answers = iter(["email", "?", " 0 "])
+    prompts = []
+
+    def read(prompt):
+        prompts.append(prompt)
+        return next(answers)
+
+    monkeypatch.setattr("builtins.input", read)
     monkeypatch.setattr(main, "authenticate", Mock(return_value=Principal(1, "admin")))
     monkeypatch.setattr(main, "getpass", Mock(return_value="pw"))
 
@@ -93,7 +100,7 @@ def test_menu_recovers_without_advertising_unimplemented_features(monkeypatch, c
     output = capsys.readouterr().out
     assert "Administrator menu" in output
     assert "Invalid choice" in output
-    assert "View analytics" not in output
+    assert prompts[1:] == ["1. Add screening\n0. Exit\nChoice: "] * 2
 
 
 def test_password_echo_fallback_is_refused(monkeypatch, capsys):

@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from functools import partial
 
 import pytest
 
@@ -29,11 +30,12 @@ def test_create_persists_back_to_back_screenings(seeded_database, db_factory):
     ids = [create(db_factory, start) for start in starts]
     with db_factory().cursor() as cursor:
         cursor.execute(
-            "SELECT starts_at,sold_tickets FROM screenings WHERE screening_id IN (%s,%s) "
+            "SELECT movie_id,theater_id,language_id,starts_at,sold_tickets "
+            "FROM screenings WHERE screening_id IN (%s,%s) "
             "ORDER BY starts_at",
             tuple(ids),
         )
-        assert cursor.fetchall() == [(start, 0) for start in starts]
+        assert cursor.fetchall() == [(1, 1, 2, start, 0) for start in starts]
 
 
 @pytest.mark.parametrize(
@@ -68,13 +70,43 @@ def test_invalid_creation_does_not_insert(
         assert cursor.fetchone() == (12,)
 
 
-def test_cli_shows_create_action(monkeypatch):
-    def read(prompt):
-        assert "1. Add screening" in prompt
-        return "0"
+def test_existing_unavailable_language_does_not_insert(seeded_database, db_factory):
+    with seeded_database.cursor() as cursor:
+        cursor.execute("DELETE FROM movie_languages WHERE movie_id=1 AND language_id=1")
+    seeded_database.commit()
+    with pytest.raises(ValidationError, match="Language is not available"):
+        create(db_factory, datetime(2026, 11, 24, 11, 30), language=1)
+    with db_factory().cursor() as cursor:
+        cursor.execute("SELECT COUNT(*) FROM screenings")
+        assert cursor.fetchone() == (12,)
 
-    monkeypatch.setattr("builtins.input", read)
+
+def test_cli_retries_malformed_start_and_creates_screening(
+    seeded_database, db_factory, monkeypatch, capsys
+):
+    for name in ("list_movies", "list_theaters", "list_languages"):
+        monkeypatch.setattr(
+            admin, name, partial(getattr(screenings, name), connect=db_factory)
+        )
+    monkeypatch.setattr(
+        admin,
+        "create_screening",
+        partial(screenings.create_screening, connect=db_factory, clock=clock),
+    )
+    answers = iter(
+        ["1", "2", "3", "1", "bad date", "1", "2", "3", "1", "2026-11-24 11:30", "0"]
+    )
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
     admin.run(ADMIN)
+    output = capsys.readouterr().out
+    assert "2: Fixture Movie 2" in output and "3: Theater 3 (30 seats)" in output
+    assert "1: Italian" in output and "Use YYYY-MM-DD HH:MM" in output
+    assert "Screening 113 added." in output
+    with db_factory().cursor() as cursor:
+        cursor.execute(
+            "SELECT movie_id,theater_id,language_id,starts_at FROM screenings WHERE screening_id > 112"
+        )
+        assert cursor.fetchall() == [(2, 3, 1, datetime(2026, 11, 24, 11, 30))]
 
 
 def test_overlap_read_sees_commit_after_snapshot(
