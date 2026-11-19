@@ -550,9 +550,11 @@ rollback of a written state change after an injected pre-commit failure,
 and retained history. The seeded CLI relisted method 201 as inactive;
 SQL independently confirmed purchases 303 and 308 still reference it.
 Ruff lint/format, pip check, wheel build and whitespace passed; no configured
-type checker. Checkpoint and CI pending. The user will merge the PR.
-Implementation: `c282971`; PR #56. Correctness, security, and test checkpoint
-reviews launched. Isolated Compose services stopped without deleting volumes.
+type checker. Implementation: `c282971`; PR #56. Checkpoint GO: correctness,
+security, and test reviews found no blockers. Non-blocking test follow-ups:
+exercise deactivation directly with unauthorized principals and verify the
+lock on an already-inactive method. Isolated Compose services stopped without
+deleting volumes. T10 remains IN REVIEW until the user merges after green CI.
 
 ## T11 — Search screenings from the client menu
 - [ ] **TODO · M · Owner C, D adapter / E query integration · Reviewer D · Depends: T05, T06, T08 · SC3, SC5, SC6**
