@@ -1,14 +1,17 @@
 # T01 — Fixture IDs, report oracles and race contracts
 
-Revision T01-r1, 14 November 2026. Draft pending joint review.
-No SQL/data has been executed by T01.
+T01-r1 oracle (approved by the user on 14 November 2026), implemented by T06.
+Shipped `data.sql` anchor: **D = 2026-11-23**. All data is fictional.
 
 ## Identity and reference IDs
 
 - users: admin 1; clients 11–16, each with client_profiles and distinct fictional
   names/addresses. Credentials: admin@example.test / DemoAdmin-2026!,
   client11@example.test through client16@example.test / DemoClient-2026!.
-  T06 generates a distinct synthetic salt per account with the agreed encoding.
+   T06 generated a distinct random 16-byte salt per account, frozen in `data.sql`.
+   Encoding: `scrypt$16384$8$1$<salt_hex>$<key_hex>`; 32-byte derived key,
+   UTF-8 password, standard-library `hashlib.scrypt(n=16384, r=8, p=1, dklen=32)`.
+   Tests independently derive every stored key from the documented password.
 - payment_methods: 201 client11 active credit; 202 client11 inactive debit;
   203 client12 active debit; 204 client13 active credit; 205 client14 active debit;
   206 client15 active credit; 207 client16 active debit. Every address is synthetic.
@@ -34,6 +37,49 @@ The SQL seed remains executable SQL with explicit literals and documented D.
 Test suites reset only their dedicated target under the T03 guard, never dev/demo.
 Each independent verifier uses separate Compose project/ports/credentials/volumes,
 or Eleonora serializes reset-bearing runs on a shared test target.
+
+### Loading and repeating the demo
+
+Load `schema.sql`, then `data.sql`, once into an empty dedicated database using
+the plan's MySQL import commands. The seed uses one transaction and explicit
+INSERTs, ending with COMMIT; it has no resets, upserts or constraint disabling.
+Do not use mysql `--force`: an import error must stop loading. A duplicate import
+is an error, not an update mechanism. Keep existing purchase history intact.
+
+For another demo date D', make a separate copy of `data.sql` for a **new empty**
+demo database and update its header with D'. Apply this complete mapping:
+
+| Original literal | Replacement |
+|---|---|
+| 2026-11-23 | D' (recent releases and purchase day) |
+| 2023-11-23 | D' minus three calendar years; Feb29 maps to Feb28 |
+| 2026-11-24 through 2026-11-28 | D'+1 through D'+5 respectively |
+
+Compute all replacements from the original copy, in one pass (avoid cascading
+find/replace). Preserve purchase time 08:00 and screening time 10:00, IDs,
+quantities and amounts. Recheck the twelve rows against the day-offset table
+below before importing. All old releases stay over two years old and all new
+releases stay recent; the price/report oracles therefore remain unchanged.
+Use an injected aware clock D' 09:00 in `Europe/Rome` for a scripted rehearsal.
+The checked-in SQL and automated tests always retain the original fixed anchor;
+they never silently shift with the machine's current date.
+
+### Explicit test lifecycle
+
+- `db_connection` / `db_factory`: independent connections, no schema or seed reset.
+- `schema_database`: opts into `empty_database`'s validated test-only reset,
+  loads schema, and yields the connection; teardown resets that test target.
+- `seeded_database`: opts into schema plus the actual committed `data.sql`.
+  Independent connections see the rows; fixture cleanup closes connections before
+  the guarded reset. No production service implicitly seeds.
+- `pricing_database`: additionally inserts/commits theater4 (capacity10, both
+  flags) for focused coverage of all eight prices. Ordinary seed/report tests
+  still contain exactly three theaters, so capacity totals remain 220.
+
+Verification: `python -m pytest tests/integration/test_seed.py -q` uses real
+MySQL, validates credentials, calendar/schedule constraints, ownership,
+per-screening counters, captured amounts and the independent report totals below.
+These are fixture-oracle checks, not implementation of the later Q1–Q5 services.
 
 ## Twelve-screening seed and purchase reconciliation
 

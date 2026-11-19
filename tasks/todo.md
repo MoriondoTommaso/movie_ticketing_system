@@ -352,16 +352,57 @@ with release/screening dates and both capability flags, returning Decimal.
   T05 remains IN REVIEW pending checkpoint approval and CI.
 
 ## T06 — Populate coherent, reproducible movie data
-- [ ] **TODO · M · Owner E · Reviewer C · Depends: T04, T05 · SC2, SC10**
+- [ ] **IN REVIEW · M · Owner E · Reviewer C · Depends: T04, T05 · SC2, SC10**
 
 **Files:** `data.sql`, `tests/integration/test_seed.py`, `docs/fixtures.md`, `tests/conftest.py`.
 
 **Acceptance:**
-- [ ] Seed 6–8 movies, 2–3 theaters, 6–8 clients plus admin, multiple synthetic methods/languages/genres, 12–15 screenings and purchases. Seed documented salted scrypt credentials with recorded parameters compatible with T01, not plaintext database passwords.
-- [ ] Original/available languages and genres meet minimum cardinalities; schedules respect rules; purchase totals/counters reconcile, including zero/partial/full and capacity-10/sold-9 cases, foreign and inactive methods. With only 2–3 demo theaters, supply a fourth capability combination in focused test fixtures to cover all eight prices.
-- [ ] Fixtures control dates and offer a repeatable relative-date demo seed policy; expose known report expectations including multiple purchases per screening, different capacities, and movies without screenings.
+- [x] Seed 6–8 movies, 2–3 theaters, 6–8 clients plus admin, multiple synthetic methods/languages/genres, 12–15 screenings and purchases. Seed documented salted scrypt credentials with recorded parameters compatible with T01, not plaintext database passwords.
+- [x] Original/available languages and genres meet minimum cardinalities; schedules respect rules; purchase totals/counters reconcile, including zero/partial/full and capacity-10/sold-9 cases, foreign and inactive methods. With only 2–3 demo theaters, supply a fourth capability combination in focused test fixtures to cover all eight prices.
+- [x] Fixtures control dates and offer a repeatable relative-date demo seed policy; expose known report expectations including multiple purchases per screening, different capacities, and movies without screenings.
 
 **Verification:** Plan's clean `data.sql` load after schema; `python -m pytest tests/integration/test_seed.py -q`; manually reconcile fixture quantities and captured totals with the fixture document.
+
+**T06 progress — 17 November 2026:** Branch `task/T06-reproducible-seed`
+from `ef43e5f`. GitHub confirms T04 #47 and T05 #48 merged; T05 approved
+with successful CI, superseding its pending merge note above. TDD first:
+42-line seed tests fail because the opt-in seeded fixture is missing.
+Frozen T01 oracle: 12 screenings, eight purchases, anchor D=2026-11-23.
+TDD instructions retained; incremental-implementation skill unavailable.
+Fixture implementation exposed missing data.sql on real MySQL (RED), then
+two tests passed with shipped seed inventory, distinct salted scrypt hashes and
+49 tickets / EUR840.20 captured totals. Focused Ruff passes. Isolated verifier:
+`db-project-t06-20261117`, `.env.example`, ports 23706/23707; `.env` preserved.
+
+**T06 verification — 17 November 2026 (SC2, SC10):**
+- Seed/lifecycle slice: `cb38f98`. Second RED: missing opt-in fourth-theater
+  fixture; GREEN after adding it. Focused suite: **6 passed**, including
+  independent-connection visibility, all eight prices and unchanged three-theater
+  report totals. Uses the approved eight-purchase oracle (SPEC §5 says several
+  purchases; 12–15 is the screening count), rather than changing T01 fixture IDs.
+- Full suite: **111 passed, zero skipped**, Python 3.13 / MySQL 8.4.13.
+  Pytest ran via `.venv/bin/python`, process env plus `.env.example` plus the
+  two port overrides above. Missing MySQL remains a failure, not a skip.
+- PASS: `ruff check src tests`, `ruff format --check src tests` (eight files),
+  `pip check`, `pip wheel --no-deps` into approved temporary storage,
+  Compose `--profile test config --quiet`, and `git diff --check`.
+  No configured type checker or compilation gate.
+- PASS: confirmed isolated dev schema empty (zero tables), then imported
+  `schema.sql` and `data.sql` through Compose exec/mysql without `--force`.
+  Independent SQL output: eight purchases / 49 tickets / EUR840.20 / 220 seats.
+  Hand reconciliation: movie revenues 215+540+24+43.20+18=840.20;
+  theater revenues 159+80+601.20=840.20; movie seat totals
+  30+40+30+40+50+10+20=220. Each sold counter matches purchase quantities.
+- Fixed anchor and complete date-rebase mapping documented in `docs/fixtures.md`;
+  no runtime clock dependency, existing history rewrite or dev reset.
+- Manual scoped diff review: five task/ledger files, exact frozen IDs, salted
+  credentials, explicit opt-in resets and transaction commit; no blockers found.
+  Graph coverage is best-effort; SQL parse gaps were verified directly in source
+  and by actual imports. `/checkpoint` remains unavailable, so independent
+  checkpoint approval is pending. No merge or next task before that gate.
+- Verification/documentation commit: `51a72f5`; PR #49
+  (`task/T06-reproducible-seed`). Isolated services stopped using `down` without
+  `-v`, retaining volumes. T06 remains IN REVIEW pending checkpoint and CI.
 
 ## C02 — Foundation freeze
 - [ ] **TODO · Owner A + all · Depends: C01, T04–T06**
