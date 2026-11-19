@@ -465,7 +465,7 @@ Checkpoint GO after the coverage fix; revert the PR if an integration regression
 appears. Merge still requires green CI on the final head and repository approval.
 
 ## T08 — Open authenticated CLI sessions with role dispatch
-- [ ] **IN REVIEW · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
+- [x] **DONE · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
 
 **Files:** `src/main.py`, `src/client.py`, `src/admin.py`, `tests/unit/test_cli_auth.py`.
 
@@ -481,9 +481,13 @@ roles, retries, EOF and refusal of an echoed password prompt. Full suite:
 162 passed on isolated MySQL (Compose `db-project-t08`, ports 23906/23907).
 Ruff lint/format, `pip check`, wheel build and diff whitespace passed; no
 configured type checker. Root greeting untouched. Only Exit is available in
-the role adapters until downstream features land. PR checkpoint and CI pending.
-Implementation: `047828c`; PR #54. Checkpoint reviews launched. The isolated
-Compose services were stopped without deleting volumes.
+the role adapters until downstream features land. Implementation: `047828c`;
+PR #54. The isolated Compose services were stopped without deleting volumes.
+Checkpoint GO: correctness, security, and test reviews found no blockers.
+Optional follow-ups: assert the exact Exit-only choices for both menus and
+assert that a rejected login followed by exit never calls a role adapter.
+Seeded live login remains C03 work. If an integration regression appears,
+revert PR #54 and rerun the focused and full checks.
 
 ## T09 — Let clients list and add their payment methods
 - [ ] **TODO · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
