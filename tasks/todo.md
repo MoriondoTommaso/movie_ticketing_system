@@ -723,9 +723,12 @@ two tickets at EUR14.40 each / EUR28.80 total, with independent SQL confirming
 the captured amounts and sold count rising from 3 to 5. Ruff lint/format,
 dependencies, wheel build, and whitespace passed; no configured type checker.
 Write-failure injection and coordinated last-seat race remain T16/T17.
-Checkpoint and CI pending; only the user merges.
-Implementation: `5c65cc0`; PR #60. Checkpoint reviews launched. Isolated
-Compose services stopped without deleting volumes.
+Implementation: `5c65cc0`; PR #60. Checkpoint GO: correctness, security, and
+test reviews found no blockers. The exact diff confirms `CapacityError` is the
+only database module change. Optional follow-ups: cover rejection of a naive
+clock and assert the complete CLI receipt in the automated test. The integrated
+schedule/search/admin capacity comparison remains C05. Isolated Compose stopped
+without deleting volumes. T15 stays IN REVIEW until the user merges after CI.
 
 ## C05 — First-purchase checkpoint
 - [ ] **TODO · Owner D + all · Depends: C04, T13–T15**
