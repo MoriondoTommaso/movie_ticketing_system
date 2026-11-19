@@ -5,6 +5,7 @@ import re
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
@@ -24,6 +25,15 @@ class CinemaError(Exception):
 
 class ValidationError(CinemaError):
     """Invalid configuration or application input."""
+
+
+class NotFoundError(CinemaError):
+    """The requested entity does not exist."""
+
+
+def default_clock() -> datetime:
+    """Return the current instant as an aware UTC datetime."""
+    return datetime.now(UTC)
 
 
 class AuthenticationError(CinemaError):
