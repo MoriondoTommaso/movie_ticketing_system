@@ -445,6 +445,11 @@ Full suite: **127 passed**. Ruff lint/format, `pip check`, wheel build and
 `db-project-t07`, `.env.example`, ports 23806/23807. Checkpoint and CI pending.
 Implementation: `67a6b8f`; PR #52. Isolated services stopped without `-v`.
 Checkpoint correctness, security, and test reviews launched on the PR diff.
+Correctness and security found no blockers. Test review found a missing positive
+database-backed client check; added it and reran focused (16 passed), full
+(127 passed), Ruff lint/format, and whitespace checks. No runtime code changed.
+Checkpoint GO after the coverage fix; revert the PR if an integration regression
+appears. Merge still requires green CI on the final head and repository approval.
 
 ## T08 — Open authenticated CLI sessions with role dispatch
 - [ ] **TODO · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**

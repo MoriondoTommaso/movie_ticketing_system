@@ -83,6 +83,7 @@ def test_roles_are_checked_against_the_database(accounts, db_factory):
     client = authenticate("client@example.test", PASSWORD, connect=db_factory)
     admin = authenticate("admin@example.test", PASSWORD, connect=db_factory)
     require_role(client, "client")
+    verify_principal(accounts, client, "client")
     verify_principal(accounts, admin, "admin")
     for principal, role in [
         (None, "client"),
