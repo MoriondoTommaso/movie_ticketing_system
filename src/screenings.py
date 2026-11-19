@@ -22,13 +22,17 @@ from src.pricing import calculate_unit_price
 from src.schedule_rules import validate_interval
 
 _ROME = ZoneInfo("Europe/Rome")
-_SEARCH = """
+_VIEW_SELECT = """
 SELECT s.screening_id, m.movie_id, t.theater_id, m.title, l.name, s.starts_at,
        m.release_date, t.capacity - s.sold_tickets, t.supports_3d, t.enhanced_sound
 FROM screenings s
 JOIN movies m ON m.movie_id = s.movie_id
 JOIN theaters t ON t.theater_id = s.theater_id
 JOIN languages l ON l.language_id = s.language_id
+"""
+_SEARCH = (
+    _VIEW_SELECT
+    + """
 WHERE s.starts_at > %(now_local)s
   AND (%(title_pattern)s IS NULL OR m.title LIKE %(title_pattern)s ESCAPE '!')
   AND (%(genre_id)s IS NULL OR EXISTS (
@@ -41,6 +45,14 @@ WHERE s.starts_at > %(now_local)s
   AND (%(time_to)s IS NULL OR TIME(s.starts_at) <= %(time_to)s)
 ORDER BY s.starts_at, s.screening_id
 """
+)
+_SCHEDULE = (
+    _VIEW_SELECT
+    + """
+WHERE (%(screening_date)s IS NULL OR DATE(s.starts_at) = %(screening_date)s)
+ORDER BY s.starts_at, s.screening_id
+"""
+)
 
 
 @dataclass(frozen=True)
@@ -312,6 +324,10 @@ def search_screenings(
     with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
         cursor.execute(_SEARCH, params)
         rows = cursor.fetchall()
+    return _screening_views(rows)
+
+
+def _screening_views(rows) -> list[ScreeningView]:
     return [
         ScreeningView(
             sid,
@@ -327,6 +343,31 @@ def search_screenings(
         )
         for sid, mid, tid, name, language, starts, release, available, three_d, sound in rows
     ]
+
+
+def list_schedule(
+    principal: Principal,
+    *,
+    screening_date: date | None = None,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[ScreeningView]:
+    """List the admin schedule, including historical screenings."""
+    require_role(principal, "admin")
+    if screening_date is not None and type(screening_date) is not date:
+        raise ValidationError("Use a screening date.")
+    with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
+        cursor.execute(_SCHEDULE, {"screening_date": screening_date})
+        return _screening_views(cursor.fetchall())
+
+
+def list_capacity(
+    principal: Principal,
+    *,
+    screening_date: date | None = None,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[ScreeningView]:
+    """List advisory seat counts using the same records as the admin schedule."""
+    return list_schedule(principal, screening_date=screening_date, connect=connect)
 
 
 def lock_screening(conn: MySQLConnectionAbstract, screening_id: int) -> LockedScreening:

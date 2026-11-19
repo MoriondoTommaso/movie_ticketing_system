@@ -100,7 +100,13 @@ def test_menu_recovers_without_advertising_unimplemented_features(monkeypatch, c
     output = capsys.readouterr().out
     assert "Administrator menu" in output
     assert "Invalid choice" in output
-    assert prompts[1:] == ["1. Add screening\n0. Exit\nChoice: "] * 2
+    assert (
+        prompts[1:]
+        == [
+            "1. Add screening\n2. View schedule\n3. View remaining capacity\n0. Exit\nChoice: "
+        ]
+        * 2
+    )
 
 
 def test_password_echo_fallback_is_refused(monkeypatch, capsys):

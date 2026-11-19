@@ -1,6 +1,7 @@
 """Administrator terminal adapter; features are added as services land."""
 
 from datetime import datetime
+from typing import Literal
 
 from src.auth import Principal
 from src.database import (
@@ -9,7 +10,14 @@ from src.database import (
     NotFoundError,
     ValidationError,
 )
-from src.screenings import create_screening, list_languages, list_movies, list_theaters
+from src.screenings import (
+    create_screening,
+    list_capacity,
+    list_languages,
+    list_movies,
+    list_schedule,
+    list_theaters,
+)
 
 
 def _read_id(prompt: str) -> int:
@@ -53,14 +61,52 @@ def _add_screening(principal: Principal) -> None:
         print(f"Screening {screening_id} added.")
 
 
+def _show_view(principal: Principal, view: Literal["schedule", "capacity"]) -> None:
+    try:
+        raw_date = input("Date YYYY-MM-DD (optional): ").strip()
+        screening_date = (
+            datetime.strptime(raw_date, "%Y-%m-%d").date() if raw_date else None
+        )
+        read = list_schedule if view == "schedule" else list_capacity
+        rows = read(principal, screening_date=screening_date)
+    except ValueError:
+        print("Use YYYY-MM-DD for the date.")
+        return
+    except ValidationError as exc:
+        print(exc)
+        return
+    except AuthorizationError:
+        print("Access denied.")
+        return
+    except DatabaseError:
+        print("Screening view is unavailable. Try again.")
+        return
+
+    print("Schedule" if view == "schedule" else "Remaining capacity")
+    if not rows:
+        print("No screenings found.")
+    for row in rows:
+        print(
+            f"{row.screening_id}: {row.title} | Theater {row.theater_id} | "
+            f"{row.starts_at:%Y-%m-%d %H:%M} | {row.language} | "
+            f"{row.available_seats} seats (advisory)"
+        )
+
+
 def run(principal: Principal) -> None:
     """Run the administrator menu for the authenticated session."""
     print("Administrator menu")
     while True:
-        choice = input("1. Add screening\n0. Exit\nChoice: ").strip()
+        choice = input(
+            "1. Add screening\n2. View schedule\n3. View remaining capacity\n0. Exit\nChoice: "
+        ).strip()
         if choice == "0":
             return
         if choice == "1":
             _add_screening(principal)
+        elif choice == "2":
+            _show_view(principal, "schedule")
+        elif choice == "3":
+            _show_view(principal, "capacity")
         else:
-            print("Invalid choice. Enter 1 or 0.")
+            print("Invalid choice. Enter 1, 2, 3 or 0.")
