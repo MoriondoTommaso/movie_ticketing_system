@@ -652,6 +652,8 @@ CLI accepted two back-to-back creations and declined an overlapping request.
 Ruff lint/format, dependency and wheel checks, and whitespace passed. No
 configured type checker. The T12 overflow edge is translated at the scheduling
 service boundary; no changes to T12. Checkpoint pending; only the user merges.
+Implementation: `bb7f80b`; PR #58. Checkpoint reviews launched. Isolated
+Compose services stopped without deleting volumes.
 
 ## T14 — Show schedule and remaining capacity to administrators
 - [ ] **TODO · M · Owner C · Reviewer D · Depends: T13 · SC7**
