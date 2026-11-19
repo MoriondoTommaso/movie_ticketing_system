@@ -490,14 +490,14 @@ Seeded live login remains C03 work. If an integration regression appears,
 revert PR #54 and rerun the focused and full checks.
 
 ## T09 — Let clients list and add their payment methods
-- [ ] **BLOCKED · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
+- [ ] **IN REVIEW · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
 
-**Files:** `src/payments.py`, `src/client.py`, `tests/unit/test_payment_validation.py`, `tests/integration/test_payments.py`.
+**Files:** `src/payments.py`, `src/client.py`, `tests/unit/test_payment_validation.py`, `tests/integration/test_payments.py`, `src/database.py` (approved retryable error subclass only).
 
 **Acceptance:**
-- [ ] CLI management lists only the authenticated client's methods, masks numbers and shows active state; add accepts approved synthetic credit/debit fields and required billing address.
-- [ ] Service-boundary tests reject malformed fields, unauthenticated/inappropriate principals and foreign-owner access; supplied SQL-like text cannot change query structure.
-- [ ] Provide transaction-compatible payment lookup/validation on the caller's connection, with no implicit commit, so booking can lock and revalidate ownership/activity.
+- [x] CLI management lists only the authenticated client's methods, masks numbers and shows active state; add accepts approved synthetic credit/debit fields and required billing address.
+- [x] Service-boundary tests reject malformed fields, unauthenticated/inappropriate principals and foreign-owner access; supplied SQL-like text cannot change query structure.
+- [x] Provide transaction-compatible payment lookup/validation on the caller's connection, with no implicit commit, so booking can lock and revalidate ownership/activity.
 
 **Verification:** `python -m pytest tests/unit/test_payment_validation.py tests/integration/test_payments.py -q`; manual `python -m src.main` → client → payment management → add/list and invalid-input recovery.
 
@@ -508,6 +508,15 @@ Graph lookup and source inspection found `DatabaseError` but no shared
 retryable subclass. `src/database.py` is outside T09's allowed files.
 Await approval to add just that class there or to defer typed lock-error
 classification to a separate task. No implementation or test changes.
+
+**Resolution and verification:** User approved the shared error subclass. RED:
+missing payment module, then a failing CLI flow with no payment menu. GREEN:
+22 focused and 184 full-suite tests passed on isolated MySQL. The caller-held
+row lock blocked a second connection with a bounded timeout; retry succeeded
+after caller rollback. Ruff lint/format, dependency check and wheel build
+passed. No configured type checker. Interactive `python -m src.main` verified
+masked list, invalid-number recovery, add, relist and exit against isolated
+seeded MySQL, ports 24006/24007. Checkpoint and CI required before merge.
 
 ## C03 — First client flow checkpoint
 - [ ] **TODO · Owner B + all · Depends: C02, T07–T09**
