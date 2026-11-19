@@ -443,6 +443,8 @@ success, refusal, and driver failure. Tests use task-local accounts, not demo se
 Full suite: **127 passed**. Ruff lint/format, `pip check`, wheel build and
 `git diff --check` passed. No configured type checker. Isolated Compose project
 `db-project-t07`, `.env.example`, ports 23806/23807. Checkpoint and CI pending.
+Implementation: `67a6b8f`; PR #52. Isolated services stopped without `-v`.
+Checkpoint correctness, security, and test reviews launched on the PR diff.
 
 ## T08 — Open authenticated CLI sessions with role dispatch
 - [ ] **TODO · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
