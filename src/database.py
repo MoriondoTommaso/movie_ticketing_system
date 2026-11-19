@@ -6,11 +6,14 @@ from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 import mysql.connector
 from dotenv import dotenv_values
 from mysql.connector.abstracts import MySQLConnectionAbstract
+
+if TYPE_CHECKING:
+    from src.auth import Principal, Role
 
 Target = Literal["dev", "test"]
 
@@ -21,6 +24,14 @@ class CinemaError(Exception):
 
 class ValidationError(CinemaError):
     """Invalid configuration or application input."""
+
+
+class AuthenticationError(CinemaError):
+    """Credentials could not be verified."""
+
+
+class AuthorizationError(CinemaError):
+    """The principal is not allowed to perform the requested operation."""
 
 
 class DatabaseError(CinemaError):
@@ -92,6 +103,32 @@ def _connect(settings: DatabaseSettings) -> MySQLConnectionAbstract:
 def connect(*, target: Target = "dev") -> MySQLConnectionAbstract:
     """Return a new connection; caller commits/rolls back and closes resources."""
     return _connect(settings_from_env(target=target))
+
+
+def verify_principal(
+    conn: MySQLConnectionAbstract, principal: "Principal", required_role: "Role"
+) -> None:
+    """Verify the stored role/profile without owning the caller's transaction."""
+    from src.auth import require_role
+
+    require_role(principal, required_role)
+    try:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "SELECT u.role, cp.user_id FROM users u "
+                "LEFT JOIN client_profiles cp ON cp.user_id = u.user_id "
+                "WHERE u.user_id = %s",
+                (principal.user_id,),
+            )
+            row = cursor.fetchone()
+    except mysql.connector.Error as exc:
+        raise DatabaseError("Principal verification failed") from exc
+    if (
+        row is None
+        or row[0] != required_role
+        or (required_role == "client" and row[1] is None)
+    ):
+        raise AuthorizationError("Access denied")
 
 
 @contextmanager
