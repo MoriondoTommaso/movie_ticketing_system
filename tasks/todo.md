@@ -465,15 +465,23 @@ Checkpoint GO after the coverage fix; revert the PR if an integration regression
 appears. Merge still requires green CI on the final head and repository approval.
 
 ## T08 — Open authenticated CLI sessions with role dispatch
-- [ ] **TODO · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
+- [ ] **IN REVIEW · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
 
 **Files:** `src/main.py`, `src/client.py`, `src/admin.py`, `tests/unit/test_cli_auth.py`.
 
 **Acceptance:**
-- [ ] `python -m src.main` asks for email/password, routes using the authenticated principal, and supports exit/EOF; invalid login/input/database errors return understandable outcomes without tracebacks or open resources.
-- [ ] Establish thin client/admin adapter entry points for incremental feature handlers; unavailable functions are not presented as working. Preserve the root greeting scaffold and document the canonical module entry point in the later README.
+- [x] `python -m src.main` asks for email/password, routes using the authenticated principal, and supports exit/EOF; invalid login/input/database errors return understandable outcomes without tracebacks or open resources.
+- [x] Establish thin client/admin adapter entry points for incremental feature handlers; unavailable functions are not presented as working. Preserve the root greeting scaffold and document the canonical module entry point in the later README.
 
 **Verification:** `python -m pytest tests/unit/test_cli_auth.py -q` covering client/admin dispatch, invalid credentials, exit and EOF using service fakes; real auth is verified by T07. Seeded live CLI login is a C03 integration obligation, not a prerequisite for completing T08.
+
+**T08 evidence:** T07 merged as `7f2a141` (#52). RED: missing `src.main`
+at collection. GREEN: 12 focused tests, including module exit, both stored
+roles, retries, EOF and refusal of an echoed password prompt. Full suite:
+162 passed on isolated MySQL (Compose `db-project-t08`, ports 23906/23907).
+Ruff lint/format, `pip check`, wheel build and diff whitespace passed; no
+configured type checker. Root greeting untouched. Only Exit is available in
+the role adapters until downstream features land. PR checkpoint and CI pending.
 
 ## T09 — Let clients list and add their payment methods
 - [ ] **TODO · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
