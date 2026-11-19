@@ -591,8 +591,11 @@ independent filter assertions. Added authenticated genre/language reads and
 displayed their ID/name choices before prompting. Added near-miss rows for each
 filter and checked expected IDs independently through the service and bound Q1.
 RED: CLI test failed on the missing choices. GREEN: 13 focused and 204 full-suite
-tests, plus Ruff, dependency, wheel and whitespace checks. Re-review and CI
-pending. Optional follow-up: Q1 pricing parity on leap-day anniversaries.
+tests, plus Ruff, dependency, wheel and whitespace checks. Follow-up commit:
+`e0c98aa`. Checkpoint GO: correctness, security, and test re-reviews found no
+blockers. Optional follow-ups: Q1 parity at the exact start cutoff and leap-day
+pricing boundary, and direct search role-denial tests. T11 remains IN REVIEW
+until the user merges after green CI.
 
 ## T12 — Specify valid screening intervals in executable rules
 - [ ] **IN REVIEW · S · Owner Eleonora · Reviewer Tommaso · Depends: T01, T02 · SC7**
