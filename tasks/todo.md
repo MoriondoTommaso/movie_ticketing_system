@@ -624,7 +624,7 @@ until the user merges after green CI.
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; demonstrate price/filter results, invalid ranges, and irreversible method deactivation with preserved references.
 
 ## T13 — Create a valid screening from the administrator menu
-- [ ] **TODO · M · Owner C · Reviewer D · Depends: T06, T08, T12 · SC7, SC11**
+- [ ] **BLOCKED · M · Owner C · Reviewer D · Depends: T06, T08, T12 · SC7, SC11**
 
 **Files:** `src/screenings.py`, `src/admin.py`, `tests/integration/test_scheduling.py`.
 
@@ -634,6 +634,15 @@ until the user merges after green CI.
 - [ ] Direct service calls by clients fail; CLI validates input and presents service errors without SQL or business logic in the adapter.
 
 **Verification:** `python -m pytest tests/integration/test_scheduling.py -q`; manual valid, back-to-back and rejected overlap creation via `python -m src.main`.
+
+**T13 blocker:** T06, T08, and T12 are merged. The T08 CLI test
+`test_menu_recovers_without_advertising_unimplemented_features` in
+`tests/unit/test_cli_auth.py` explicitly requires “Add screening” to be absent
+and uses choice `1` as invalid. T13 makes that feature available; preserving
+the old expectation would require hiding or renaming a delivered feature.
+Await approval to update just this out-of-scope regression test to use an
+invalid choice and check that a still-unimplemented action is not advertised.
+No implementation or test changes.
 
 ## T14 — Show schedule and remaining capacity to administrators
 - [ ] **TODO · M · Owner C · Reviewer D · Depends: T13 · SC7**
