@@ -504,16 +504,25 @@ appears. Merge still requires green CI on the final head and repository approval
 **Verification:** `python -m pytest tests/integration/test_search.py -q`; manual combined search and no-results path using `python -m src.main`; inspect representative bound-parameter execution against MySQL.
 
 ## T12 — Specify valid screening intervals in executable rules
-- [ ] **TODO · S · Owner C · Reviewer D · Depends: T01, T02 · SC7**
+- [ ] **IN REVIEW · S · Owner Eleonora · Reviewer Tommaso · Depends: T01, T02 · SC7**
 
 **Files:** `src/schedule_rules.py`, `tests/unit/test_schedule_rules.py`.
 
 **Acceptance:**
-- [ ] Minute-resolution runtime fits the same local date between 10:00 and 23:59 inclusive at boundaries; reject before-open, too-late and date-crossing intervals.
-- [ ] Half-open overlap rejects intersecting intervals and permits exact back-to-back screenings; cover equal starts, contained intervals, adjacent dates and exact close.
-- [ ] Pure rules use the frozen timezone/clock convention and explicit types, shared with scheduling rather than copied into the menu.
+- [x] Minute-resolution runtime fits the same local date between 10:00 and 23:59 inclusive at boundaries; reject before-open, too-late and date-crossing intervals.
+- [x] Half-open overlap rejects intersecting intervals and permits exact back-to-back screenings; cover equal starts, contained intervals, adjacent dates and exact close.
+- [x] Pure rules use the frozen timezone/clock convention and explicit types, shared with scheduling rather than copied into the menu.
 
 **Verification:** `python -m pytest tests/unit/test_schedule_rules.py -q` and focused Ruff.
+
+**T12 evidence — 18 November 2026:**
+- Tests first: RED (missing `src.schedule_rules`), GREEN 16 interval cases;
+  RED (missing `overlaps`), GREEN 23 cases.
+- PASS: `python -m pytest tests/unit/test_schedule_rules.py -q` → 23 passed;
+  `python -m pytest tests/unit -q` → 40 passed.
+- PASS: `ruff check src tests`, `ruff format --check src tests`, `git diff --check`.
+- The "start in the future" rule is not in T12: these functions have no clock,
+  so T13 checks it after locking the theater row.
 
 ## C04 — Discovery/payment checkpoint
 - [ ] **TODO · Owner C + all · Depends: C03, T10–T12**
