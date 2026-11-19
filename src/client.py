@@ -5,7 +5,7 @@ from datetime import date, time
 from src.auth import Principal
 from src.database import AuthorizationError, DatabaseError, ValidationError
 from src.payments import PaymentMethod, add_method, deactivate_method, list_methods
-from src.screenings import search_screenings
+from src.screenings import list_genres, list_languages, search_screenings
 
 
 def _show_method(method: PaymentMethod) -> None:
@@ -68,11 +68,20 @@ def _optional_input(prompt, parse):
 
 def _search(principal: Principal) -> None:
     try:
+        title = _optional_input("Title substring (optional): ", str)
+        print("Genres:")
+        for genre in list_genres(principal):
+            print(f"{genre.genre_id}: {genre.name}")
+        genre_id = _optional_input("Genre ID (optional): ", int)
+        print("Languages:")
+        for language in list_languages(principal):
+            print(f"{language.language_id}: {language.name}")
+        language_id = _optional_input("Language ID (optional): ", int)
         rows = search_screenings(
             principal,
-            title=_optional_input("Title substring (optional): ", str),
-            genre_id=_optional_input("Genre ID (optional): ", int),
-            language_id=_optional_input("Language ID (optional): ", int),
+            title=title,
+            genre_id=genre_id,
+            language_id=language_id,
             screening_date=_optional_input(
                 "Date YYYY-MM-DD (optional): ", date.fromisoformat
             ),

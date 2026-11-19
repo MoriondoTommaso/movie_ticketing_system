@@ -1,6 +1,7 @@
 """Client discovery and caller-owned screening row locks."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, time
 from decimal import Decimal
@@ -68,6 +69,77 @@ class LockedScreening:
     enhanced_sound: bool
 
 
+@dataclass(frozen=True)
+class GenreOption:
+    genre_id: int
+    name: str
+
+
+@dataclass(frozen=True)
+class LanguageOption:
+    language_id: int
+    name: str
+
+
+@contextmanager
+def _verified_read(
+    principal: Principal, connect: Callable[[], MySQLConnectionAbstract]
+) -> Iterator[MySQLConnectionAbstract]:
+    require_role(
+        principal, principal.role if isinstance(principal, Principal) else "client"
+    )
+    try:
+        conn = connect()
+        try:
+            database.verify_principal(conn, principal, principal.role)
+            yield conn
+        finally:
+            try:
+                conn.rollback()
+            finally:
+                conn.close()
+    except Error as exc:
+        raise DatabaseError("Screening database read failed.") from exc
+
+
+def list_genres(
+    principal: Principal,
+    *,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[GenreOption]:
+    with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
+        cursor.execute("SELECT genre_id, name FROM genres ORDER BY genre_id")
+        return [GenreOption(*row) for row in cursor.fetchall()]
+
+
+def list_languages(
+    principal: Principal,
+    *,
+    movie_id: int | None = None,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[LanguageOption]:
+    if movie_id is not None:
+        _validate_id(movie_id)
+    with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
+        if movie_id is None:
+            cursor.execute(
+                "SELECT language_id, name FROM languages ORDER BY language_id"
+            )
+        else:
+            cursor.execute(
+                "SELECT movie_id FROM movies WHERE movie_id = %s", (movie_id,)
+            )
+            if cursor.fetchone() is None:
+                raise NotFoundError("Movie not found.")
+            cursor.execute(
+                "SELECT l.language_id, l.name FROM languages l "
+                "JOIN movie_languages ml ON ml.language_id = l.language_id "
+                "WHERE ml.movie_id = %s ORDER BY l.language_id",
+                (movie_id,),
+            )
+        return [LanguageOption(*row) for row in cursor.fetchall()]
+
+
 def _validate_id(value: int) -> None:
     if type(value) is not int or not 0 < value < 2**32:
         raise ValidationError("Expected a positive ID.")
@@ -118,20 +190,9 @@ def search_screenings(
         time_to=time_to,
         now_local=instant.astimezone(_ROME).replace(tzinfo=None),
     )
-    try:
-        conn = connect()
-        try:
-            database.verify_principal(conn, principal, "client")
-            with conn.cursor() as cursor:
-                cursor.execute(_SEARCH, params)
-                rows = cursor.fetchall()
-        finally:
-            try:
-                conn.rollback()
-            finally:
-                conn.close()
-    except Error as exc:
-        raise DatabaseError("Screening search failed.") from exc
+    with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
+        cursor.execute(_SEARCH, params)
+        rows = cursor.fetchall()
     return [
         ScreeningView(
             sid,

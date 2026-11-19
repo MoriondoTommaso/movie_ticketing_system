@@ -4,9 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from src import client
+from src import client, screenings
 from src.auth import Principal
-from src.database import NotFoundError, RetryableDatabaseError, ValidationError
+from src.database import (
+    AuthorizationError,
+    NotFoundError,
+    RetryableDatabaseError,
+    ValidationError,
+)
 from src.screenings import lock_screening, search_screenings
 
 CLIENT = Principal(11, "client")
@@ -14,6 +19,50 @@ CLIENT = Principal(11, "client")
 
 def demo_clock():
     return datetime(2026, 11, 23, 8, tzinfo=UTC)
+
+
+def test_each_bound_filter_excludes_a_near_miss(seeded_database, db_factory):
+    with seeded_database.cursor() as cursor:
+        cursor.execute("INSERT INTO movie_genres (movie_id,genre_id) VALUES (2,2)")
+        cursor.execute("DELETE FROM movie_genres WHERE movie_id = 2 AND genre_id = 1")
+        cursor.execute("UPDATE movies SET title = 'Another title' WHERE movie_id = 3")
+        cursor.executemany(
+            "INSERT INTO screenings (screening_id,movie_id,theater_id,language_id,starts_at) "
+            "VALUES (%s,%s,%s,%s,%s)",
+            [
+                (201, 1, 3, 2, "2026-11-24 11:00:00"),  # Upper endpoint.
+                (202, 2, 3, 2, "2026-11-24 10:00:00"),  # Wrong genre.
+                (203, 1, 3, 1, "2026-11-24 10:00:00"),  # Wrong language.
+                (204, 1, 3, 2, "2026-11-25 10:00:00"),  # Wrong date.
+                (205, 1, 3, 2, "2026-11-24 09:59:00"),  # Below range.
+                (206, 1, 3, 2, "2026-11-24 11:01:00"),  # Above range.
+                (207, 3, 3, 2, "2026-11-24 10:00:00"),  # Wrong title.
+            ],
+        )
+    seeded_database.commit()
+    filters = dict(
+        title="Fixture Movie",
+        genre_id=1,
+        language_id=2,
+        screening_date=date(2026, 11, 24),
+        time_from=time(10),
+        time_to=time(11),
+    )
+    rows = search_screenings(CLIENT, **filters, clock=demo_clock, connect=db_factory)
+    artifact = Path(__file__).resolve().parents[2] / "queries.sql"
+    title_pattern = f"%{filters.pop('title')}%"
+    with seeded_database.cursor() as cursor:
+        cursor.execute(
+            artifact.read_text().split(";", 1)[0],
+            dict(
+                filters,
+                title_pattern=title_pattern,
+                now_local=datetime(2026, 11, 23, 9),
+            ),
+        )
+        q1_ids = [row[0] for row in cursor.fetchall()]
+    assert [row.screening_id for row in rows] == [101, 102, 201]
+    assert q1_ids == [101, 102, 201]
 
 
 def test_q1_artifact_matches_search(seeded_database, db_factory):
@@ -52,6 +101,15 @@ def test_cli_search_and_empty_result(seeded_database, db_factory, monkeypatch, c
         )
 
     monkeypatch.setattr(client, "search_screenings", search, raising=False)
+
+    def genres(principal):
+        return screenings.list_genres(principal, connect=db_factory)
+
+    def languages(principal):
+        return screenings.list_languages(principal, connect=db_factory)
+
+    monkeypatch.setattr(client, "list_genres", genres, raising=False)
+    monkeypatch.setattr(client, "list_languages", languages, raising=False)
     answers = iter(
         [
             "2",
@@ -71,12 +129,48 @@ def test_cli_search_and_empty_result(seeded_database, db_factory, monkeypatch, c
             "0",
         ]
     )
-    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    output = []
+
+    def read(prompt):
+        output.append(capsys.readouterr().out)
+        if prompt.startswith("Genre ID"):
+            assert "1: Drama" in output[-1] and "2: Comedy" in output[-1]
+        if prompt.startswith("Language ID"):
+            assert "1: Italian" in output[-1] and "2: English" in output[-1]
+        return next(answers)
+
+    monkeypatch.setattr("builtins.input", read)
     client.run(CLIENT)
-    output = capsys.readouterr().out
-    assert "Fixture Movie 1" in output and "EUR 20.00" in output
-    assert "English" in output and "advisory" in output
-    assert "No screenings found." in output
+    rendered = "".join([*output, capsys.readouterr().out])
+    assert "Fixture Movie 1" in rendered and "EUR 20.00" in rendered
+    assert "English" in rendered and "advisory" in rendered
+    assert "No screenings found." in rendered
+
+
+def test_catalog_checks_stored_roles_and_movie_language_membership(
+    seeded_database, db_factory
+):
+    with seeded_database.cursor() as cursor:
+        cursor.execute(
+            "DELETE FROM movie_languages WHERE movie_id = 1 AND language_id = 1"
+        )
+    seeded_database.commit()
+
+    admin = Principal(1, "admin")
+    assert [
+        item.name for item in screenings.list_genres(admin, connect=db_factory)
+    ] == [
+        "Drama",
+        "Comedy",
+    ]
+    assert [
+        item.name
+        for item in screenings.list_languages(CLIENT, movie_id=1, connect=db_factory)
+    ] == ["English"]
+    with pytest.raises(NotFoundError):
+        screenings.list_languages(admin, movie_id=99999, connect=db_factory)
+    with pytest.raises(AuthorizationError):
+        screenings.list_genres(Principal(11, "admin"), connect=db_factory)
 
 
 def test_combined_search_returns_each_screening_once(seeded_database, db_factory):

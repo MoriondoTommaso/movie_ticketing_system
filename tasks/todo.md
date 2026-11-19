@@ -586,6 +586,14 @@ and whitespace passed. No configured type checker. User owns the merge.
 Implementation: `1bd120d`; PR #57. Correctness, security, and test checkpoint
 reviews launched. Isolated Compose services stopped without deleting volumes.
 
+**Checkpoint fixes:** The correctness review requested catalog choices and
+independent filter assertions. Added authenticated genre/language reads and
+displayed their ID/name choices before prompting. Added near-miss rows for each
+filter and checked expected IDs independently through the service and bound Q1.
+RED: CLI test failed on the missing choices. GREEN: 13 focused and 204 full-suite
+tests, plus Ruff, dependency, wheel and whitespace checks. Re-review and CI
+pending. Optional follow-up: Q1 pricing parity on leap-day anniversaries.
+
 ## T12 — Specify valid screening intervals in executable rules
 - [ ] **IN REVIEW · S · Owner Eleonora · Reviewer Tommaso · Depends: T01, T02 · SC7**
 
