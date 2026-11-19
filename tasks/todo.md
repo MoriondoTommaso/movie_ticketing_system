@@ -651,15 +651,18 @@ theater lock before clock access, and connection closure on timeout. The seeded
 CLI accepted two back-to-back creations and declined an overlapping request.
 Ruff lint/format, dependency and wheel checks, and whitespace passed. No
 configured type checker. The T12 overflow edge is translated at the scheduling
-service boundary; no changes to T12. Checkpoint pending; only the user merges.
+service boundary; no changes to T12. Only the user merges.
 Implementation: `bb7f80b`; PR #58. Checkpoint reviews launched. Isolated
 Compose services stopped without deleting volumes.
 
 **Checkpoint follow-up:** The T08 regression now asserts the actual menu
 prompts, not stdout alone. Scheduling tests cover malformed CLI input followed
 by successful creation, persisted selected IDs, and an existing language not
-offered for the selected movie. No service changes. Reverification: 26 focused
-and 218 full-suite passes on MySQL.
+offered for the selected movie. No service changes. Reverification at `f6d7ef5`:
+26 focused and 218 full-suite passes on MySQL. Checkpoint GO: correctness,
+security, and test reviews found no blockers after the follow-up. Optional
+tests: mixed-runtime overlap and injected failure after insert. The synchronized
+two-writer race remains T22. T13 stays IN REVIEW until the user merges.
 
 ## T14 — Show schedule and remaining capacity to administrators
 - [ ] **TODO · M · Owner C · Reviewer D · Depends: T13 · SC7**
