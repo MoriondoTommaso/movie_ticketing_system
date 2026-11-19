@@ -38,6 +38,10 @@ class DatabaseError(CinemaError):
     """A database operation failed; do not expose driver details to users."""
 
 
+class RetryableDatabaseError(DatabaseError):
+    """A lock timeout or deadlock requires the caller to retry the transaction."""
+
+
 @dataclass(frozen=True)
 class DatabaseSettings:
     host: str
