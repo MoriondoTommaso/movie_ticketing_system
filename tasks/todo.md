@@ -482,6 +482,8 @@ roles, retries, EOF and refusal of an echoed password prompt. Full suite:
 Ruff lint/format, `pip check`, wheel build and diff whitespace passed; no
 configured type checker. Root greeting untouched. Only Exit is available in
 the role adapters until downstream features land. PR checkpoint and CI pending.
+Implementation: `047828c`; PR #54. Checkpoint reviews launched. The isolated
+Compose services were stopped without deleting volumes.
 
 ## T09 — Let clients list and add their payment methods
 - [ ] **TODO · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
