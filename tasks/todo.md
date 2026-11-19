@@ -697,14 +697,14 @@ inject query/cleanup failures. Isolated Compose services stopped without
 deleting volumes. T14 stays IN REVIEW until the user merges after green CI.
 
 ## T15 — Buy multiple tickets atomically through the CLI
-- [ ] **BLOCKED · M · Owner D · Reviewer A · Depends: T05, T06, T09, T10, T11 · SC6, SC8, SC11**
+- [ ] **IN REVIEW · M · Owner D · Reviewer A · Depends: T05, T06, T09, T10, T11 · SC6, SC8, SC11**
 
-**Files:** `src/booking.py`, `src/client.py`, `tests/integration/test_booking.py`, `tests/unit/test_booking_validation.py`.
+**Files:** `src/booking.py`, `src/client.py`, `tests/integration/test_booking.py`, `tests/unit/test_booking_validation.py`, `src/database.py` (approved `CapacityError` only).
 
 **Acceptance:**
-- [ ] Authenticated client submits screening/quantity/method; reject zero, negative, noninteger (including boolean) quantities and already-started screenings using the controlled cinema clock. No prompt occurs inside a transaction.
-- [ ] One transaction locks screening then payment, reads current capacity, revalidates owner/active method, computes Decimal price internally, inserts captured unit/total and increases sold count, committing only both together.
-- [ ] Real MySQL cases verify multi-ticket success and persisted totals/counter, missing IDs, foreign/inactive methods and insufficient capacity with no partial state; CLI displays structured purchase confirmation or understandable failure.
+- [x] Authenticated client submits screening/quantity/method; reject zero, negative, noninteger (including boolean) quantities and already-started screenings using the controlled cinema clock. No prompt occurs inside a transaction.
+- [x] One transaction locks screening then payment, reads current capacity, revalidates owner/active method, computes Decimal price internally, inserts captured unit/total and increases sold count, committing only both together.
+- [x] Real MySQL cases verify multi-ticket success and persisted totals/counter, missing IDs, foreign/inactive methods and insufficient capacity with no partial state; CLI displays structured purchase confirmation or understandable failure.
 
 **Verification:** `python -m pytest tests/unit/test_booking_validation.py tests/integration/test_booking.py -q`; manual `python -m src.main` purchase and persisted confirmation, using independent SQL reads in the integration tests to verify counter/amounts. The admin capacity comparison belongs to C05. No interface amount/role/availability may override database facts.
 
@@ -715,6 +715,15 @@ distinguish insufficient capacity from other request failures; defining it in
 `src/booking.py` would change the shared contract. `src/database.py` is outside
 T15's allowed files. Await approval to add only the missing exception subclass.
 No implementation or test changes.
+
+**Resolution:** User approved adding `CapacityError`. RED: focused tests could
+not import the missing booking module. GREEN: 13 focused tests and 238
+full-suite tests passed on isolated MySQL. Seeded CLI purchase 309 confirmed
+two tickets at EUR14.40 each / EUR28.80 total, with independent SQL confirming
+the captured amounts and sold count rising from 3 to 5. Ruff lint/format,
+dependencies, wheel build, and whitespace passed; no configured type checker.
+Write-failure injection and coordinated last-seat race remain T16/T17.
+Checkpoint and CI pending; only the user merges.
 
 ## C05 — First-purchase checkpoint
 - [ ] **TODO · Owner D + all · Depends: C04, T13–T15**
