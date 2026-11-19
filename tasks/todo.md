@@ -724,6 +724,8 @@ the captured amounts and sold count rising from 3 to 5. Ruff lint/format,
 dependencies, wheel build, and whitespace passed; no configured type checker.
 Write-failure injection and coordinated last-seat race remain T16/T17.
 Checkpoint and CI pending; only the user merges.
+Implementation: `5c65cc0`; PR #60. Checkpoint reviews launched. Isolated
+Compose services stopped without deleting volumes.
 
 ## C05 — First-purchase checkpoint
 - [ ] **TODO · Owner D + all · Depends: C04, T13–T15**
