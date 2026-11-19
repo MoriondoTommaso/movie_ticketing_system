@@ -1,8 +1,11 @@
 """Client terminal adapter; features are added as services land."""
 
+from datetime import date, time
+
 from src.auth import Principal
 from src.database import AuthorizationError, DatabaseError, ValidationError
 from src.payments import PaymentMethod, add_method, deactivate_method, list_methods
+from src.screenings import search_screenings
 
 
 def _show_method(method: PaymentMethod) -> None:
@@ -58,14 +61,61 @@ def _manage_payment_methods(principal: Principal) -> None:
             return
 
 
+def _optional_input(prompt, parse):
+    value = input(prompt).strip()
+    return parse(value) if value else None
+
+
+def _search(principal: Principal) -> None:
+    try:
+        rows = search_screenings(
+            principal,
+            title=_optional_input("Title substring (optional): ", str),
+            genre_id=_optional_input("Genre ID (optional): ", int),
+            language_id=_optional_input("Language ID (optional): ", int),
+            screening_date=_optional_input(
+                "Date YYYY-MM-DD (optional): ", date.fromisoformat
+            ),
+            time_from=_optional_input("From HH:MM (optional): ", time.fromisoformat),
+            time_to=_optional_input("To HH:MM (optional): ", time.fromisoformat),
+        )
+    except ValueError:
+        print("Use numeric IDs, YYYY-MM-DD dates, and HH:MM times.")
+        return
+    except ValidationError as exc:
+        print(exc)
+        return
+    except AuthorizationError:
+        print("Access denied.")
+        return
+    except DatabaseError:
+        print("Screening search is unavailable. Try again.")
+        return
+
+    if not rows:
+        print("No screenings found.")
+    for row in rows:
+        print(
+            f"{row.screening_id}: {row.title} | Theater {row.theater_id} | "
+            f"{row.starts_at:%Y-%m-%d %H:%M} | {row.language} | EUR {row.unit_price:.2f} | "
+            f"{row.available_seats} seats (advisory) | "
+            f"3D: {'yes' if row.supports_3d else 'no'} | "
+            f"Enhanced sound: {'yes' if row.enhanced_sound else 'no'}"
+        )
+
+
 def run(principal: Principal) -> None:
     """Run the client menu for the authenticated session."""
     print("Client menu")
     while True:
-        choice = input("1. Manage payment methods\n0. Exit\nChoice: ").strip()
+        choice = input(
+            "1. Manage payment methods\n2. Search screenings\n0. Exit\nChoice: "
+        ).strip()
         if choice == "0":
             return
         if choice == "1":
             _manage_payment_methods(principal)
+        elif choice == "2":
+            _search(principal)
         else:
-            print("Invalid choice. Enter 1 or 0.")
+            print("Invalid choice. Enter 1, 2 or 0.")

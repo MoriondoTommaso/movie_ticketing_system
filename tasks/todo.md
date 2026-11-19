@@ -557,14 +557,14 @@ lock on an already-inactive method. Isolated Compose services stopped without
 deleting volumes. T10 remains IN REVIEW until the user merges after green CI.
 
 ## T11 — Search screenings from the client menu
-- [ ] **BLOCKED · M · Owner C, D adapter / E query integration · Reviewer D · Depends: T05, T06, T08 · SC3, SC5, SC6**
+- [ ] **IN REVIEW · M · Owner C, D adapter / E query integration · Reviewer D · Depends: T05, T06, T08 · SC3, SC5, SC6**
 
-**Files:** `src/screenings.py`, `src/client.py`, `tests/integration/test_search.py`, `queries.sql`.
+**Files:** `src/screenings.py`, `src/client.py`, `tests/integration/test_search.py`, `queries.sql`, `src/database.py` (approved clock and not-found definitions only).
 
 **Acceptance:**
-- [ ] Combined title-substring, exact genre/language/date and inclusive optional time-range filters use AND and bound parameters; invalid ranges are rejected and genre joins cannot duplicate screenings.
-- [ ] Results ordered by start then ID contain movie/theater/date/time/language, authoritative unit price, advisory available seats and both capability flags; display and empty-result behavior work in CLI.
-- [ ] Add Q1 to the query artifact and supply transaction-compatible authoritative screening lookup for booking without committing its connection.
+- [x] Combined title-substring, exact genre/language/date and inclusive optional time-range filters use AND and bound parameters; invalid ranges are rejected and genre joins cannot duplicate screenings.
+- [x] Results ordered by start then ID contain movie/theater/date/time/language, authoritative unit price, advisory available seats and both capability flags; display and empty-result behavior work in CLI.
+- [x] Add Q1 to the query artifact and supply transaction-compatible authoritative screening lookup for booking without committing its connection.
 
 **Verification:** `python -m pytest tests/integration/test_search.py -q`; manual combined search and no-results path using `python -m src.main`; inspect representative bound-parameter execution against MySQL.
 
@@ -574,6 +574,15 @@ source checks confirm both are missing. Search needs the shared clock for
 future-only results; `lock_screening` needs the shared error for a missing
 screening. `src/database.py` is outside T11's allowed files. Await approval to
 add only those two shared definitions. No implementation or tests changed.
+
+**Resolution and verification:** User approved both shared definitions. RED:
+missing `NotFoundError`, then missing Q1 and CLI search. GREEN: 11 focused and
+202 full-suite tests on isolated MySQL (ports 24306/24307). Bound Q1 results
+matched the service, which uses the authoritative Python price calculation.
+The locking lookup read past a stale snapshot and held the screening lock
+until caller rollback. Seeded `python -m src.main` combined filter, empty
+result, and exit passed. Ruff lint/format, dependency and wheel build checks,
+and whitespace passed. No configured type checker. User owns the merge.
 
 ## T12 — Specify valid screening intervals in executable rules
 - [ ] **IN REVIEW · S · Owner Eleonora · Reviewer Tommaso · Depends: T01, T02 · SC7**
