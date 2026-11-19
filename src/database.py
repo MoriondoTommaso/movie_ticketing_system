@@ -31,6 +31,10 @@ class NotFoundError(CinemaError):
     """The requested entity does not exist."""
 
 
+class CapacityError(CinemaError):
+    """The screening does not have enough available seats."""
+
+
 def default_clock() -> datetime:
     """Return the current instant as an aware UTC datetime."""
     return datetime.now(UTC)

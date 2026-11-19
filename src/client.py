@@ -3,7 +3,15 @@
 from datetime import date, time
 
 from src.auth import Principal
-from src.database import AuthorizationError, DatabaseError, ValidationError
+from src.booking import book_tickets
+from src.database import (
+    AuthorizationError,
+    CapacityError,
+    DatabaseError,
+    NotFoundError,
+    RetryableDatabaseError,
+    ValidationError,
+)
 from src.payments import PaymentMethod, add_method, deactivate_method, list_methods
 from src.screenings import list_genres, list_languages, search_screenings
 
@@ -113,12 +121,37 @@ def _search(principal: Principal) -> None:
         )
 
 
+def _buy_tickets(principal: Principal) -> None:
+    try:
+        screening_id = int(input("Screening ID: "))
+        quantity = int(input("Ticket quantity: "))
+        method_id = int(input("Payment method ID: "))
+    except ValueError:
+        print("Enter whole numbers for the IDs and ticket quantity.")
+        return
+    try:
+        receipt = book_tickets(principal, screening_id, quantity, method_id)
+    except (ValidationError, NotFoundError, CapacityError) as exc:
+        print(exc)
+    except AuthorizationError:
+        print("Access denied.")
+    except RetryableDatabaseError:
+        print("Booking is busy. Try again.")
+    except DatabaseError:
+        print("Booking could not be confirmed. Check before trying again.")
+    else:
+        print(
+            f"Purchase {receipt.purchase_id}: {receipt.quantity} tickets at "
+            f"EUR {receipt.unit_price:.2f} each; total EUR {receipt.total_amount:.2f}."
+        )
+
+
 def run(principal: Principal) -> None:
     """Run the client menu for the authenticated session."""
     print("Client menu")
     while True:
         choice = input(
-            "1. Manage payment methods\n2. Search screenings\n0. Exit\nChoice: "
+            "1. Manage payment methods\n2. Search screenings\n3. Buy tickets\n0. Exit\nChoice: "
         ).strip()
         if choice == "0":
             return
@@ -126,5 +159,7 @@ def run(principal: Principal) -> None:
             _manage_payment_methods(principal)
         elif choice == "2":
             _search(principal)
+        elif choice == "3":
+            _buy_tickets(principal)
         else:
-            print("Invalid choice. Enter 1, 2 or 0.")
+            print("Invalid choice. Enter 1, 2, 3 or 0.")
