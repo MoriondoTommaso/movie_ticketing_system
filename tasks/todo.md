@@ -490,7 +490,7 @@ Seeded live login remains C03 work. If an integration regression appears,
 revert PR #54 and rerun the focused and full checks.
 
 ## T09 — Let clients list and add their payment methods
-- [ ] **IN REVIEW · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
+- [x] **DONE · M · Owner B, D integrates adapter · Reviewer E · Depends: T06, T08 · SC6, SC11**
 
 **Files:** `src/payments.py`, `src/client.py`, `tests/unit/test_payment_validation.py`, `tests/integration/test_payments.py`, `src/database.py` (approved retryable error subclass only).
 
@@ -517,8 +517,13 @@ after caller rollback. Ruff lint/format, dependency check and wheel build
 passed. No configured type checker. Interactive `python -m src.main` verified
 masked list, invalid-number recovery, add, relist and exit against isolated
 seeded MySQL, ports 24006/24007. Checkpoint and CI required before merge.
-Implementation: `7ea9023`; PR #55. Correctness, security, and test checkpoint
-reviews are in progress.
+Implementation: `7ea9023`; PR #55. Checkpoint GO: correctness, security, and
+test reviews found no merge blockers. The final diff confirms that the retryable
+error subclass is the only `src/database.py` change.
+Proposed follow-ups: hide synthetic number entry; test rollback/close after a
+failed write and preserve the original error on cleanup failure; assert relisting
+separately from add confirmation. If an integration regression appears, revert
+PR #55 and rerun focused and full checks.
 
 ## C03 — First client flow checkpoint
 - [ ] **TODO · Owner B + all · Depends: C02, T07–T09**
