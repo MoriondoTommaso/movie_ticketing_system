@@ -517,6 +517,8 @@ after caller rollback. Ruff lint/format, dependency check and wheel build
 passed. No configured type checker. Interactive `python -m src.main` verified
 masked list, invalid-number recovery, add, relist and exit against isolated
 seeded MySQL, ports 24006/24007. Checkpoint and CI required before merge.
+Implementation: `7ea9023`; PR #55. Correctness, security, and test checkpoint
+reviews are in progress.
 
 ## C03 — First client flow checkpoint
 - [ ] **TODO · Owner B + all · Depends: C02, T07–T09**
