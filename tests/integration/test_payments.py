@@ -1,10 +1,16 @@
 from functools import partial
 
 import pytest
+from mysql.connector import OperationalError
 
 from src import client, payments
 from src.auth import Principal
-from src.database import AuthorizationError, RetryableDatabaseError, ValidationError
+from src.database import (
+    AuthorizationError,
+    DatabaseError,
+    RetryableDatabaseError,
+    ValidationError,
+)
 from src.payments import add_method, list_methods, lock_valid_method
 
 CLIENT = Principal(11, "client")
@@ -78,6 +84,105 @@ def test_lookup_holds_row_lock_until_caller_rolls_back(seeded_database, db_facto
     owner.rollback()
     contender.start_transaction()
     assert lock_valid_method(contender, CLIENT, 201) == method
+
+
+def test_deactivation_keeps_history_and_is_idempotent(seeded_database, db_factory):
+    for _ in range(2):
+        assert payments.deactivate_method(CLIENT, 201, connect=db_factory) is None
+    assert [
+        (m.payment_method_id, m.active)
+        for m in list_methods(CLIENT, connect=db_factory)
+    ] == [(201, False), (202, False)]
+    with db_factory().cursor() as cursor:
+        cursor.execute(
+            "SELECT purchase_id FROM purchases WHERE payment_method_id = %s "
+            "ORDER BY purchase_id",
+            (201,),
+        )
+        assert cursor.fetchall() == [(303,), (308,)]
+    with pytest.raises(ValidationError, match="^Invalid payment method$"):
+        lock_valid_method(db_factory(), CLIENT, 201)
+
+
+@pytest.mark.parametrize("method_id", [203, 99999, True])
+def test_deactivation_denies_non_owned_or_invalid_id(
+    seeded_database, db_factory, method_id
+):
+    conn = db_factory()
+    with pytest.raises(ValidationError, match="^Invalid payment method$"):
+        payments.deactivate_method(CLIENT, method_id, connect=lambda: conn)
+    if method_id is not True:
+        assert not conn.is_connected()
+    assert list_methods(Principal(12, "client"), connect=db_factory)[0].active
+
+
+def test_deactivation_timeout_closes_connection_and_can_retry(
+    seeded_database, db_factory
+):
+    owner, contender = db_factory(), db_factory()
+    owner.start_transaction()
+    lock_valid_method(owner, CLIENT, 201)
+    with contender.cursor() as cursor:
+        cursor.execute("SET SESSION innodb_lock_wait_timeout = 1")
+    with pytest.raises(RetryableDatabaseError):
+        payments.deactivate_method(CLIENT, 201, connect=lambda: contender)
+    assert not contender.is_connected()
+    owner.rollback()
+    assert list_methods(CLIENT, connect=db_factory)[0].active
+    payments.deactivate_method(CLIENT, 201, connect=db_factory)
+    assert not list_methods(CLIENT, connect=db_factory)[0].active
+
+
+def test_deactivation_rolls_back_written_change_on_failure(
+    seeded_database, db_factory, monkeypatch
+):
+    conn = db_factory()
+    rollback = conn.rollback
+    rolled_back = False
+
+    def fail_before_commit():
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "SELECT active FROM payment_methods WHERE payment_method_id = 201"
+            )
+            assert cursor.fetchone() == (0,)
+        raise OperationalError("Injected pre-commit failure")
+
+    def record_rollback():
+        nonlocal rolled_back
+        rollback()
+        rolled_back = True
+
+    monkeypatch.setattr(conn, "commit", fail_before_commit)
+    monkeypatch.setattr(conn, "rollback", record_rollback)
+    with pytest.raises(DatabaseError, match="Payment database operation failed"):
+        payments.deactivate_method(CLIENT, 201, connect=lambda: conn)
+    assert rolled_back
+    assert not conn.is_connected()
+    assert list_methods(CLIENT, connect=db_factory)[0].active
+    payments.deactivate_method(CLIENT, 201, connect=db_factory)
+
+
+def test_cli_deactivation_recovers_and_relists(
+    seeded_database, db_factory, monkeypatch, capsys
+):
+    monkeypatch.setattr(
+        client, "list_methods", partial(list_methods, connect=db_factory)
+    )
+    monkeypatch.setattr(
+        client,
+        "deactivate_method",
+        lambda *args: payments.deactivate_method(*args, connect=db_factory),
+        raising=False,
+    )
+    answers = iter(["1", "3", "bad", "3", "203", "3", "201", "1", "0", "0"])
+    monkeypatch.setattr("builtins.input", lambda _: next(answers))
+    client.run(CLIENT)
+    output = capsys.readouterr().out
+    assert "Enter a positive method ID" in output
+    assert "Invalid payment method" in output
+    assert "inactive" in output
+    assert "201: credit ****0201 (inactive)" in output
 
 
 def test_cli_lists_and_adds_owned_methods_after_invalid_input(

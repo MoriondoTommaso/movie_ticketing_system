@@ -531,16 +531,26 @@ PR #55 and rerun focused and full checks.
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; use `python -m src.main` to verify T06's documented client/admin credentials, invalid credentials, exit/EOF, role dispatch → add/list owned method and client rejection at an admin service boundary/role guard.
 
 ## T10 — Deactivate methods without losing purchase references
-- [ ] **TODO · M · Owner B, D integrates adapter · Reviewer E · Depends: T09 · SC6, SC8**
+- [ ] **IN REVIEW · M · Owner B, D integrates adapter · Reviewer E · Depends: T09 · SC6, SC8**
 
 **Files:** `src/payments.py`, `src/client.py`, `tests/integration/test_payments.py`.
 
 **Acceptance:**
-- [ ] Owner can deactivate through CLI; state change is irreversible within the initial scope and preserves existing purchase references. Repeated deactivation has a documented consistent outcome.
-- [ ] The service locks the payment row while checking ownership and changing state; inactive or foreign methods fail purchase validation on a caller-owned transaction.
-- [ ] Validation/database failures roll back and release connections/locks; history references and method visibility remain intact.
+- [x] Owner can deactivate through CLI; state change is irreversible within the initial scope and preserves existing purchase references. Repeated deactivation has a documented consistent outcome.
+- [x] The service locks the payment row while checking ownership and changing state; inactive or foreign methods fail purchase validation on a caller-owned transaction.
+- [x] Validation/database failures roll back and release connections/locks; history references and method visibility remain intact.
 
 **Verification:** `python -m pytest tests/integration/test_payments.py -q`; manual deactivation path via `python -m src.main`, checking an existing seeded purchase reference still exists.
+
+**T10 evidence:** T09 merged at `9524f76`. RED: six failures for missing
+service/CLI deactivation; GREEN: 21 focused and 191 full-suite tests on
+isolated MySQL. Repeated deactivation of an owned inactive method succeeds
+without changing it. Tests verify an actual lock timeout and release,
+rollback of a written state change after an injected pre-commit failure,
+and retained history. The seeded CLI relisted method 201 as inactive;
+SQL independently confirmed purchases 303 and 308 still reference it.
+Ruff lint/format, pip check, wheel build and whitespace passed; no configured
+type checker. Checkpoint and CI pending. The user will merge the PR.
 
 ## T11 — Search screenings from the client menu
 - [ ] **TODO · M · Owner C, D adapter / E query integration · Reviewer D · Depends: T05, T06, T08 · SC3, SC5, SC6**
