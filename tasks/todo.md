@@ -624,14 +624,14 @@ until the user merges after green CI.
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; demonstrate price/filter results, invalid ranges, and irreversible method deactivation with preserved references.
 
 ## T13 — Create a valid screening from the administrator menu
-- [ ] **BLOCKED · M · Owner C · Reviewer D · Depends: T06, T08, T12 · SC7, SC11**
+- [ ] **IN REVIEW · M · Owner C · Reviewer D · Depends: T06, T08, T12 · SC7, SC11**
 
-**Files:** `src/screenings.py`, `src/admin.py`, `tests/integration/test_scheduling.py`.
+**Files:** `src/screenings.py`, `src/admin.py`, `tests/integration/test_scheduling.py`, `tests/unit/test_cli_auth.py` (approved obsolete menu assertion update only).
 
 **Acceptance:**
-- [ ] Authorized administrator can select existing movie/theater, allowed language and valid interval; missing entities, invalid language/time and overlaps fail with no inserted row.
-- [ ] Transaction acquires theater lock before checking/inserting; overlap uses a current/locking read so a preexisting snapshot cannot hide a just-committed competitor. Failure rolls back and closes resources.
-- [ ] Direct service calls by clients fail; CLI validates input and presents service errors without SQL or business logic in the adapter.
+- [x] Authorized administrator can select existing movie/theater, allowed language and valid interval; missing entities, invalid language/time and overlaps fail with no inserted row.
+- [x] Transaction acquires theater lock before checking/inserting; overlap uses a current/locking read so a preexisting snapshot cannot hide a just-committed competitor. Failure rolls back and closes resources.
+- [x] Direct service calls by clients fail; CLI validates input and presents service errors without SQL or business logic in the adapter.
 
 **Verification:** `python -m pytest tests/integration/test_scheduling.py -q`; manual valid, back-to-back and rejected overlap creation via `python -m src.main`.
 
@@ -643,6 +643,15 @@ the old expectation would require hiding or renaming a delivered feature.
 Await approval to update just this out-of-scope regression test to use an
 invalid choice and check that a still-unimplemented action is not advertised.
 No implementation or test changes.
+
+**Resolution:** User approved the T08 assertion update. RED: 11 failures for
+the missing service and menu. GREEN: 25 focused scheduling/CLI tests and 217
+full-suite tests on isolated MySQL. Tests check stale-snapshot rejection,
+theater lock before clock access, and connection closure on timeout. The seeded
+CLI accepted two back-to-back creations and declined an overlapping request.
+Ruff lint/format, dependency and wheel checks, and whitespace passed. No
+configured type checker. The T12 overflow edge is translated at the scheduling
+service boundary; no changes to T12. Checkpoint pending; only the user merges.
 
 ## T14 — Show schedule and remaining capacity to administrators
 - [ ] **TODO · M · Owner C · Reviewer D · Depends: T13 · SC7**

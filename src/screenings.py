@@ -19,6 +19,7 @@ from src.database import (
     ValidationError,
 )
 from src.pricing import calculate_unit_price
+from src.schedule_rules import validate_interval
 
 _ROME = ZoneInfo("Europe/Rome")
 _SEARCH = """
@@ -81,6 +82,18 @@ class LanguageOption:
     name: str
 
 
+@dataclass(frozen=True)
+class MovieOption:
+    movie_id: int
+    title: str
+
+
+@dataclass(frozen=True)
+class TheaterOption:
+    theater_id: int
+    capacity: int
+
+
 @contextmanager
 def _verified_read(
     principal: Principal, connect: Callable[[], MySQLConnectionAbstract]
@@ -110,6 +123,26 @@ def list_genres(
     with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
         cursor.execute("SELECT genre_id, name FROM genres ORDER BY genre_id")
         return [GenreOption(*row) for row in cursor.fetchall()]
+
+
+def list_movies(
+    principal: Principal,
+    *,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[MovieOption]:
+    with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
+        cursor.execute("SELECT movie_id, title FROM movies ORDER BY movie_id")
+        return [MovieOption(*row) for row in cursor.fetchall()]
+
+
+def list_theaters(
+    principal: Principal,
+    *,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[TheaterOption]:
+    with _verified_read(principal, connect) as conn, conn.cursor() as cursor:
+        cursor.execute("SELECT theater_id, capacity FROM theaters ORDER BY theater_id")
+        return [TheaterOption(*row) for row in cursor.fetchall()]
 
 
 def list_languages(
@@ -143,6 +176,92 @@ def list_languages(
 def _validate_id(value: int) -> None:
     if type(value) is not int or not 0 < value < 2**32:
         raise ValidationError("Expected a positive ID.")
+
+
+def create_screening(
+    principal: Principal,
+    movie_id: int,
+    theater_id: int,
+    language_id: int,
+    starts_at: datetime,
+    *,
+    clock: Callable[[], datetime] = database.default_clock,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> int:
+    """Serialize scheduling per theater and commit one non-overlapping screening."""
+    require_role(principal, "admin")
+    for value in (movie_id, theater_id, language_id):
+        _validate_id(value)
+    try:
+        conn = connect()
+        try:
+            conn.start_transaction()
+            database.verify_principal(conn, principal, "admin")
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SELECT theater_id FROM theaters WHERE theater_id = %s FOR UPDATE",
+                    (theater_id,),
+                )
+                if cursor.fetchone() is None:
+                    raise NotFoundError("Theater not found.")
+                instant = clock()
+                if instant.utcoffset() is None:
+                    raise ValidationError("Clock must return an aware datetime.")
+                now_local = instant.astimezone(_ROME).replace(tzinfo=None)
+                cursor.execute(
+                    "SELECT runtime_minutes FROM movies WHERE movie_id = %s",
+                    (movie_id,),
+                )
+                movie = cursor.fetchone()
+                if movie is None:
+                    raise NotFoundError("Movie not found.")
+                cursor.execute(
+                    "SELECT language_id FROM movie_languages "
+                    "WHERE movie_id = %s AND language_id = %s",
+                    (movie_id, language_id),
+                )
+                if cursor.fetchone() is None:
+                    raise ValidationError("Language is not available for this movie.")
+                try:
+                    ends_at = validate_interval(starts_at, movie[0])
+                except OverflowError:
+                    raise ValidationError(
+                        "Screenings must end on the same date."
+                    ) from None
+                if starts_at <= now_local:
+                    raise ValidationError("Screening must start in the future.")
+                cursor.execute(
+                    "SELECT s.screening_id FROM screenings s "
+                    "JOIN movies m ON m.movie_id = s.movie_id "
+                    "WHERE s.theater_id = %s AND s.starts_at >= %s AND s.starts_at < %s "
+                    "AND TIMESTAMPADD(MINUTE, m.runtime_minutes, s.starts_at) > %s "
+                    "LIMIT 1 FOR UPDATE OF s",
+                    (
+                        theater_id,
+                        starts_at.replace(hour=0, minute=0),
+                        ends_at,
+                        starts_at,
+                    ),
+                )
+                if cursor.fetchone() is not None:
+                    raise ValidationError("Screening overlaps an existing screening.")
+                cursor.execute(
+                    "INSERT INTO screenings (movie_id, theater_id, language_id, starts_at) "
+                    "VALUES (%s, %s, %s, %s)",
+                    (movie_id, theater_id, language_id, starts_at),
+                )
+                screening_id = cursor.lastrowid
+            conn.commit()
+            return screening_id
+        except BaseException:
+            conn.rollback()
+            raise
+        finally:
+            conn.close()
+    except Error as exc:
+        if exc.errno in (errorcode.ER_LOCK_WAIT_TIMEOUT, errorcode.ER_LOCK_DEADLOCK):
+            raise RetryableDatabaseError("Theater is busy. Try again.") from exc
+        raise DatabaseError("Screening creation failed.") from exc
 
 
 def search_screenings(
