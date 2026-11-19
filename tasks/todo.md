@@ -690,9 +690,11 @@ on isolated MySQL. Checks include historical rows, deterministic ordering,
 authorization, optional date filter, and seat counts for seeded and newly
 created screenings. Both menu paths verified via seeded `python -m src.main`.
 Ruff, dependencies, wheel, and whitespace passed. No configured type checker.
-Checkpoint pending; user owns the merge.
-Implementation: `cd7a401`; PR #59. Checkpoint reviews launched. Isolated
-Compose services stopped without deleting volumes.
+Implementation: `cd7a401`; PR #59. Checkpoint GO: correctness, security, and
+test reviews found no blockers. Optional follow-ups: assert complete rendered
+rows, exercise CLI recovery after malformed dates and database failures, and
+inject query/cleanup failures. Isolated Compose services stopped without
+deleting volumes. T14 stays IN REVIEW until the user merges after green CI.
 
 ## T15 — Buy multiple tickets atomically through the CLI
 - [ ] **TODO · M · Owner D · Reviewer A · Depends: T05, T06, T09, T10, T11 · SC6, SC8, SC11**
