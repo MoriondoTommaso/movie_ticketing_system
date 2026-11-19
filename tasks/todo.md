@@ -410,7 +410,7 @@ two tests passed with shipped seed inventory, distinct salted scrypt hashes and
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; verify clean schema/data loads and ER review. All lanes sign the first schema/service/fixture contract revision; changes thereafter require affected-owner review. Confirm exact dependency/image versions and timezone.
 
 ## T07 — Authenticate preloaded users and enforce stored roles
-- [ ] **TODO · S · Owner B · Reviewer E · Depends: T04 · SC4, SC11**
+- [ ] **BLOCKED · S · Owner B · Reviewer E · Depends: T04 · SC4, SC11**
 
 **Files:** `src/auth.py`, `tests/integration/test_auth.py`.
 
@@ -420,6 +420,19 @@ two tests passed with shipped seed inventory, distinct salted scrypt hashes and
 - [ ] Tests cover normalization/uniqueness, invalid password/email, malformed stored hashes and connection failure cleanup; service APIs neither prompt nor print secrets.
 
 **Verification:** `python -m pytest tests/integration/test_auth.py -q` with task-local accounts inserted into the isolated schema fixture; do not require T06's demo seed. C03 checks the shipped demo credentials separately.
+
+**T07 blocker — 19 November 2026:** Branch `task/T07-authentication` from
+`origin/main` (`e869f32`); T04 PR #47 is merged. Graph lookup (generation
+2026-11-19T07:55:26Z), path coverage and direct source inspection confirm
+`src/database.py` provides only CinemaError, ValidationError and DatabaseError;
+AuthenticationError, AuthorizationError and verify_principal are absent.
+The frozen contract (§§2–3) places those shared auth errors and the borrowed-
+connection principal verifier in database.py, outside T07's two allowed files.
+Implementing replacements in auth.py would change the shared contract.
+Await explicit permission to include src/database.py in T07, or a separately
+approved prerequisite task providing these contracts. No implementation or
+tests changed; no RED commit. TDD skill already loaded; requested
+incremental-implementation remains unavailable. No next task started.
 
 ## T08 — Open authenticated CLI sessions with role dispatch
 - [ ] **TODO · M · Owner B, D/C adapter coordination · Reviewer E · Depends: T07 · SC4, SC6, SC7**
