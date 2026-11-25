@@ -800,6 +800,7 @@ Independent SQL confirms sold 10, purchase quantities 5+4+1, and no loser
 purchase; a fresh session reacquires the screening and payment locks.
 Focused: 1 passed; full suite: 249 passed on isolated MySQL. Ruff lint/format,
 pip check, wheel build and whitespace passed. Checkpoint pending; user merges.
+Implementation: `aa0c87d`; PR #62. Three checkpoint reviews launched.
 
 ## T18 — Show the client's captured purchase history
 - [ ] **TODO · M · Owner D, E query integration · Reviewer A · Depends: T15 · SC3, SC6**
