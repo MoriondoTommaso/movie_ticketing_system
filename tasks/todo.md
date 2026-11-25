@@ -781,7 +781,7 @@ No production changes. Local MySQL: 10 focused and 248 full-suite passes;
 Ruff lint/format passed.
 
 ## T17 — Prove the exact last-seat contention outcome
-- [ ] **TODO · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
+- [ ] **IN REVIEW · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
 
 **Files:** `tests/concurrency/test_last_seat.py`, `src/booking.py` (only if a narrow synchronization seam is required).
 
@@ -791,6 +791,15 @@ Ruff lint/format passed.
 - [ ] Assert exactly one success, one capacity failure, final sold 10, one new purchase and no losing purchase; check purchase/counter reconciliation and no leaked transaction from a fresh connection.
 
 **Verification:** `python -m pytest tests/concurrency/test_last_seat.py -q`; reviewer inspects synchronization evidence to confirm actual overlap rather than two serial purchases.
+
+**T17 evidence:** T16 merged at `2326662`. RED: first worker did not pause
+while holding the screening lock. GREEN: the existing clock callback pauses
+the first worker after the lock, and the observer sees the second session's
+locking SQL on MySQL before releasing the first. No production seam added.
+Independent SQL confirms sold 10, purchase quantities 5+4+1, and no loser
+purchase; a fresh session reacquires the screening and payment locks.
+Focused: 1 passed; full suite: 249 passed on isolated MySQL. Ruff lint/format,
+pip check, wheel build and whitespace passed. Checkpoint pending; user merges.
 
 ## T18 — Show the client's captured purchase history
 - [ ] **TODO · M · Owner D, E query integration · Reviewer A · Depends: T15 · SC3, SC6**
