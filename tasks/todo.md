@@ -807,7 +807,10 @@ creation. If a worker misses its join deadline, a separate test-only connection
 terminates its session and the harness rejoins it, failing the test even when
 cleanup succeeds. Fixture cleanup does not close an active worker's connection.
 Confirmed same-account termination needs no new grants. Focused 1 and full 249
-passed again, plus Ruff and whitespace. No runtime changes; re-review pending.
+passed again, plus Ruff and whitespace. No runtime changes. Follow-up:
+`394f487`. Checkpoint GO: correctness re-review cleared the timeout blocker;
+the security and test reviews raised no other blockers. Optional: exercise
+the forced-cleanup path end to end. User owns the merge after green CI.
 
 ## T18 — Show the client's captured purchase history
 - [ ] **TODO · M · Owner D, E query integration · Reviewer A · Depends: T15 · SC3, SC6**
