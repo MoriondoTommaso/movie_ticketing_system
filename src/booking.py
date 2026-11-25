@@ -23,6 +23,56 @@ from src.pricing import calculate_unit_price
 from src.screenings import lock_screening
 
 _ROME = ZoneInfo("Europe/Rome")
+_HISTORY = """
+SELECT p.purchase_id, p.screening_id, p.quantity, m.title, l.name AS language,
+       CONCAT('****', RIGHT(pm.card_number, 4)) AS masked_number, s.theater_id,
+       s.starts_at, p.purchased_at, p.unit_price, p.total_amount
+FROM purchases p
+JOIN screenings s ON s.screening_id = p.screening_id
+JOIN movies m ON m.movie_id = s.movie_id
+JOIN languages l ON l.language_id = s.language_id
+JOIN payment_methods pm ON pm.payment_method_id = p.payment_method_id
+WHERE p.client_id = %(client_id)s
+ORDER BY p.purchased_at DESC, p.purchase_id DESC
+"""
+
+
+@dataclass(frozen=True)
+class PurchaseView:
+    purchase_id: int
+    screening_id: int
+    quantity: int
+    title: str
+    language: str
+    masked_number: str
+    theater_id: int
+    starts_at: datetime
+    purchased_at: datetime
+    unit_price: Decimal
+    total_amount: Decimal
+
+
+def list_purchases(
+    principal: Principal,
+    *,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[PurchaseView]:
+    """Return only the verified client's purchases at their captured prices."""
+    require_role(principal, "client")
+    try:
+        conn = connect()
+        try:
+            database.verify_principal(conn, principal, "client")
+            with conn.cursor() as cursor:
+                cursor.execute(_HISTORY, {"client_id": principal.user_id})
+                return [PurchaseView(*row) for row in cursor.fetchall()]
+        finally:
+            try:
+                conn.rollback()
+            finally:
+                conn.close()
+    except Error as exc:
+        raise DatabaseError("Purchase history is unavailable.") from exc
 
 
 @contextmanager

@@ -813,16 +813,22 @@ the security and test reviews raised no other blockers. Optional: exercise
 the forced-cleanup path end to end. User owns the merge after green CI.
 
 ## T18 — Show the client's captured purchase history
-- [ ] **TODO · M · Owner D, E query integration · Reviewer A · Depends: T15 · SC3, SC6**
+- [ ] **IN REVIEW · M · Owner D, E query integration · Reviewer A · Depends: T15 · SC3, SC6**
 
 **Files:** `src/booking.py`, `src/client.py`, `tests/integration/test_history.py`, `queries.sql`.
 
 **Acceptance:**
-- [ ] History CLI shows only the authenticated client's purchases, quantity, captured unit/total and screening details with deterministic time/ID ordering and an empty state.
-- [ ] Captured amounts remain unchanged if current price inputs change in a controlled test; a deactivated method retains historical references and masked display.
-- [ ] Q2 uses bound client filtering and multiple joins; unauthenticated/foreign-principal misuse and SQL-like input cannot expose another client's records.
+- [x] History CLI shows only the authenticated client's purchases, quantity, captured unit/total and screening details with deterministic time/ID ordering and an empty state.
+- [x] Captured amounts remain unchanged if current price inputs change in a controlled test; a deactivated method retains historical references and masked display.
+- [x] Q2 uses bound client filtering and multiple joins; unauthenticated/foreign-principal misuse and SQL-like input cannot expose another client's records.
 
 **Verification:** `python -m pytest tests/integration/test_history.py -q`; manual buy → history → method deactivate → history via `python -m src.main`.
+
+**T18 evidence:** T15 merged at `65d07c2`. RED: seven cases failed on missing
+history service/Q2. GREEN: seven focused and 256 full-suite tests on isolated
+MySQL. Live CLI buy → masked history → deactivate → unchanged history passed.
+The Q2 artifact was executed with bound parameters and compared to the service.
+Checkpoint review and CI before user merge; no auto-merge.
 
 ## C06 — Transaction checkpoint
 - [ ] **TODO · Owner D + all · Depends: C05, T16–T18**
