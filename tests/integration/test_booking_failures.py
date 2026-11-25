@@ -9,6 +9,42 @@ from src.booking import book_tickets
 from src.database import CapacityError, DatabaseError, RetryableDatabaseError
 
 
+@pytest.mark.parametrize("write_fails", [True, False])
+def test_write_cursor_close_failure(
+    seeded_database, db_factory, monkeypatch, write_fails
+):
+    conn = db_factory()
+    original = conn.cursor
+
+    def factory(*args, **kwargs):
+        cursor = original(*args, **kwargs)
+        execute, close = cursor.execute, cursor.close
+
+        def fail_close():
+            close()
+            raise OperationalError("Injected cursor close failure")
+
+        def inject(sql, params=None):
+            execute(sql, params)
+            if sql.startswith("INSERT INTO purchases"):
+                monkeypatch.setattr(cursor, "close", fail_close)
+                if write_fails:
+                    raise OperationalError(
+                        "Injected deadlock", errno=errorcode.ER_LOCK_DEADLOCK
+                    )
+
+        monkeypatch.setattr(cursor, "execute", inject)
+        return cursor
+
+    monkeypatch.setattr(conn, "cursor", factory)
+    expected = RetryableDatabaseError if write_fails else DatabaseError
+    with pytest.raises(expected) as failure:
+        _book(lambda: conn)
+    assert type(failure.value) is expected
+    assert not conn.is_connected()
+    assert _state(db_factory()) == (9, 2)
+
+
 def _book(connect):
     return book_tickets(
         Principal(11, "client"),
@@ -103,8 +139,13 @@ def test_lost_commit_acknowledgement_is_not_retryable(
         raise OperationalError("Lost acknowledgement", errno=2013)
 
     monkeypatch.setattr(conn, "commit", commit_without_ack)
+    rollback = Mock(side_effect=OperationalError("Lost connection during rollback"))
+    monkeypatch.setattr(conn, "rollback", rollback)
+    connect = Mock(return_value=conn)
     with pytest.raises(DatabaseError, match="outcome is unknown") as failure:
-        _book(lambda: conn)
+        _book(connect)
+    connect.assert_called_once()
+    rollback.assert_called_once()
     assert not isinstance(failure.value, RetryableDatabaseError)
     assert not conn.is_connected()
     assert _state(db_factory()) == (10, 3)
@@ -143,12 +184,39 @@ def test_server_rejected_commit_rolls_back_without_retry(
     rollback = Mock(wraps=conn.rollback)
     monkeypatch.setattr(conn, "commit", commit)
     monkeypatch.setattr(conn, "rollback", rollback)
+    connect = Mock(return_value=conn)
     with pytest.raises(RetryableDatabaseError):
-        _book(lambda: conn)
+        _book(connect)
+    connect.assert_called_once()
     commit.assert_called_once()
     rollback.assert_called_once()
     assert not conn.is_connected()
     assert _state(db_factory()) == (9, 2)
+
+
+def test_close_error_after_commit_keeps_receipt(
+    seeded_database, db_factory, monkeypatch
+):
+    conn = db_factory()
+    close = conn.close
+
+    def close_then_fail():
+        close()
+        raise OperationalError("Close failed after commit")
+
+    monkeypatch.setattr(conn, "close", close_then_fail)
+    connect = Mock(return_value=conn)
+    receipt = _book(connect)
+    connect.assert_called_once()
+    assert not conn.is_connected()
+    observer = db_factory()
+    assert _state(observer) == (10, 3)
+    with observer.cursor() as cursor:
+        cursor.execute(
+            "SELECT quantity FROM purchases WHERE purchase_id=%s",
+            (receipt.purchase_id,),
+        )
+        assert cursor.fetchone() == (1,)
 
 
 def test_validation_closes_cursor_and_connection(

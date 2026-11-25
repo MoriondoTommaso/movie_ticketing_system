@@ -758,6 +758,13 @@ type checker. Checkpoint pending; only the user merges.
 Implementation: `8a9dcf6`; PR #61. Checkpoint reviews launched; isolated
 Compose services stopped without deleting volumes.
 
+**Review follow-up:** RED: a cursor-close failure masked an injected write
+deadlock. The write cursor now preserves the primary error and still rolls
+back on a close-only failure. Tests also cover rollback failure after a lost
+commit acknowledgement and receipt delivery after an acknowledged commit
+followed by a close failure. GREEN: 10 focused and 248 full-suite tests;
+Ruff, pip and whitespace checks passed. Re-review pending.
+
 ## T17 — Prove the exact last-seat contention outcome
 - [ ] **TODO · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
 
