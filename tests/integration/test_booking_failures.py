@@ -9,6 +9,17 @@ from src.booking import book_tickets
 from src.database import CapacityError, DatabaseError, RetryableDatabaseError
 
 
+class _BookingConnection:
+    """Wrap the service boundary without intercepting connector-internal cursors."""
+
+    def __init__(self, conn, cursor_factory):
+        self.conn = conn
+        self.cursor = cursor_factory
+
+    def __getattr__(self, name):
+        return getattr(self.conn, name)
+
+
 class _TrackedCursor:
     """Observe cleanup at the caller boundary, regardless of connector backend."""
 
@@ -120,9 +131,8 @@ def test_failed_write_rolls_back_and_releases_locks(
         monkeypatch.setattr(cursor, "execute", execute_then_fail)
         return cursor
 
-    monkeypatch.setattr(conn, "cursor", cursor_factory)
     monkeypatch.setattr(conn, "rollback", rollback)
-    connect = Mock(return_value=conn)
+    connect = Mock(return_value=_BookingConnection(conn, cursor_factory))
     with pytest.raises(expected) as failure:
         _book(connect)
     assert type(failure.value) is expected
@@ -251,7 +261,6 @@ def test_validation_closes_cursor_and_connection(
         cursors.append(cursor)
         return cursor
 
-    monkeypatch.setattr(conn, "cursor", cursor_factory)
     rollback = Mock(wraps=conn.rollback)
     monkeypatch.setattr(conn, "rollback", rollback)
     with pytest.raises(CapacityError):
@@ -260,7 +269,7 @@ def test_validation_closes_cursor_and_connection(
             101,
             2,
             201,
-            connect=lambda: conn,
+            connect=lambda: _BookingConnection(conn, cursor_factory),
             clock=lambda: datetime(2026, 11, 23, 8, tzinfo=UTC),
         )
     assert cursors

@@ -774,6 +774,12 @@ than relying on the connector to invoke a monkeypatched instance method.
 Cleanup assertions remain in place; no runtime changes. Full local suite:
 248 passed; Ruff lint/format passed. Final CI pending.
 
+**Second CI follow-up:** The cursor wrapper still intercepted connector-internal
+cursor calls when patching the real connection. Pass a test-only connection
+proxy instead, so assertions apply only to cursors requested by the service.
+No production changes. Local MySQL: 10 focused and 248 full-suite passes;
+Ruff lint/format passed.
+
 ## T17 — Prove the exact last-seat contention outcome
 - [ ] **TODO · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
 
