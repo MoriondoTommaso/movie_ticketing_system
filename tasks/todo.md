@@ -755,6 +755,8 @@ validation cleanup, and committed-but-unacknowledged outcome covered. Fault
 injection is test-only via the existing connection factory. No auto-retry.
 Ruff lint/format, pip check, wheel build and whitespace passed. No configured
 type checker. Checkpoint pending; only the user merges.
+Implementation: `8a9dcf6`; PR #61. Checkpoint reviews launched; isolated
+Compose services stopped without deleting volumes.
 
 ## T17 — Prove the exact last-seat contention outcome
 - [ ] **TODO · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
