@@ -26,3 +26,15 @@ WHERE s.starts_at > %(now_local)s
   AND (%(time_from)s IS NULL OR TIME(s.starts_at) >= %(time_from)s)
   AND (%(time_to)s IS NULL OR TIME(s.starts_at) <= %(time_to)s)
 ORDER BY s.starts_at, s.screening_id;
+
+-- Q2: purchase history. Bind client_id from the verified client principal.
+SELECT p.purchase_id, p.screening_id, p.quantity, m.title, l.name AS language,
+       CONCAT('****', RIGHT(pm.card_number, 4)) AS masked_number, s.theater_id,
+       s.starts_at, p.purchased_at, p.unit_price, p.total_amount
+FROM purchases p
+JOIN screenings s ON s.screening_id = p.screening_id
+JOIN movies m ON m.movie_id = s.movie_id
+JOIN languages l ON l.language_id = s.language_id
+JOIN payment_methods pm ON pm.payment_method_id = p.payment_method_id
+WHERE p.client_id = %(client_id)s
+ORDER BY p.purchased_at DESC, p.purchase_id DESC;

@@ -3,7 +3,7 @@
 from datetime import date, time
 
 from src.auth import Principal
-from src.booking import book_tickets
+from src.booking import book_tickets, list_purchases
 from src.database import (
     AuthorizationError,
     CapacityError,
@@ -146,12 +146,34 @@ def _buy_tickets(principal: Principal) -> None:
         )
 
 
+def _show_history(principal: Principal) -> None:
+    try:
+        purchases = list_purchases(principal)
+    except AuthorizationError:
+        print("Access denied.")
+        return
+    except DatabaseError:
+        print("Purchase history is unavailable. Try again.")
+        return
+    if not purchases:
+        print("No purchases found.")
+    for row in purchases:
+        print(
+            f"Purchase {row.purchase_id} ({row.purchased_at:%Y-%m-%d %H:%M}) | "
+            f"Screening {row.screening_id}: {row.title} | Theater {row.theater_id} | "
+            f"{row.starts_at:%Y-%m-%d %H:%M} | {row.language} | "
+            f"{row.quantity} tickets at EUR {row.unit_price:.2f} each; "
+            f"total EUR {row.total_amount:.2f} | Payment {row.masked_number}"
+        )
+
+
 def run(principal: Principal) -> None:
     """Run the client menu for the authenticated session."""
     print("Client menu")
     while True:
         choice = input(
-            "1. Manage payment methods\n2. Search screenings\n3. Buy tickets\n0. Exit\nChoice: "
+            "1. Manage payment methods\n2. Search screenings\n3. Buy tickets\n"
+            "4. View purchase history\n0. Exit\nChoice: "
         ).strip()
         if choice == "0":
             return
@@ -161,5 +183,7 @@ def run(principal: Principal) -> None:
             _search(principal)
         elif choice == "3":
             _buy_tickets(principal)
+        elif choice == "4":
+            _show_history(principal)
         else:
-            print("Invalid choice. Enter 1, 2, 3 or 0.")
+            print("Invalid choice. Enter 1, 2, 3, 4 or 0.")
