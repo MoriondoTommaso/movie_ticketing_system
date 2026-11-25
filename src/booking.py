@@ -1,6 +1,7 @@
 """Atomic purchases of tickets using synthetic payment methods."""
 
 from collections.abc import Callable
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
@@ -88,13 +89,28 @@ def book_tickets(
                     "WHERE screening_id = %s",
                     (quantity, screening.screening_id),
                 )
-            conn.commit()
-            return receipt
+            try:
+                conn.commit()
+            except Error as exc:
+                if exc.errno in (
+                    errorcode.ER_LOCK_WAIT_TIMEOUT,
+                    errorcode.ER_LOCK_DEADLOCK,
+                ):
+                    raise
+                raise DatabaseError(
+                    "Booking outcome is unknown. Check before trying again."
+                ) from exc
         except BaseException:
-            conn.rollback()
+            # Cleanup must not hide the reason for failure (including a lost ACK).
+            with suppress(Error):
+                conn.rollback()
+            with suppress(Error):
+                conn.close()
             raise
-        finally:
+        # A cleanup error cannot undo an acknowledged commit.
+        with suppress(Error):
             conn.close()
+        return receipt
     except Error as exc:
         if exc.errno in (errorcode.ER_LOCK_WAIT_TIMEOUT, errorcode.ER_LOCK_DEADLOCK):
             raise RetryableDatabaseError("Booking is busy. Try again.") from exc

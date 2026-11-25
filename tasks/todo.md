@@ -736,16 +736,25 @@ without deleting volumes. T15 stays IN REVIEW until the user merges after CI.
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; cross-review the exact transaction lock/write/commit sequence and demonstrate schedule creation → search → multi-ticket purchase → changed capacity. Explicitly compare T11 search availability with T14 admin views before/after the T15 purchase. Do not claim concurrency proof until the relevant race tests pass.
 
 ## T16 — Prove rollback and lock release after failed writes
-- [ ] **TODO · S · Owner D · Reviewer A · Depends: T15 · SC8, SC11**
+- [ ] **IN REVIEW · S · Owner D · Reviewer A · Depends: T15 · SC8, SC11**
 
 **Files:** `src/booking.py`, `tests/integration/test_booking_failures.py`.
 
 **Acceptance:**
-- [ ] Inject failures after purchase insertion and separately after counter update but before commit; both leave purchase rows and sold counts unchanged, observed from a separate connection.
-- [ ] Another connection can successfully book after each failure with bounded waits, proving transaction/lock cleanup; all cursors/connections are released on validation and database errors.
-- [ ] Controlled real lock timeout plus injected connector deadlock/commit-error paths demonstrate rollback and a retryable error classification where applicable, without automatic retries or duplicate writes. Do not assert a known rollback after an indeterminate lost commit acknowledgement; distinguish that database failure.
+- [x] Inject failures after purchase insertion and separately after counter update but before commit; both leave purchase rows and sold counts unchanged, observed from a separate connection.
+- [x] Another connection can successfully book after each failure with bounded waits, proving transaction/lock cleanup; all cursors/connections are released on validation and database errors.
+- [x] Controlled real lock timeout plus injected connector deadlock/commit-error paths demonstrate rollback and a retryable error classification where applicable, without automatic retries or duplicate writes. Do not assert a known rollback after an indeterminate lost commit acknowledgement; distinguish that database failure.
 
 **Verification:** `python -m pytest tests/integration/test_booking_failures.py -q`; review injection seams for deterministic tests and absence of user-facing failure switches.
+
+**T16 evidence:** T15 merged at `65d07c2`. RED: lost commit acknowledgement
+was reported as a generic database failure. GREEN: 7 focused and 245 full-suite
+tests on isolated MySQL (ports 24906/24907). Post-write rollback verified by
+independent read and bounded retry; real payment-row timeout, injected deadlock,
+validation cleanup, and committed-but-unacknowledged outcome covered. Fault
+injection is test-only via the existing connection factory. No auto-retry.
+Ruff lint/format, pip check, wheel build and whitespace passed. No configured
+type checker. Checkpoint pending; only the user merges.
 
 ## T17 — Prove the exact last-seat contention outcome
 - [ ] **TODO · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
