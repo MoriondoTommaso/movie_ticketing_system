@@ -50,9 +50,15 @@ def test_q2_returns_only_verified_client_rows(seeded_database, db_factory):
     path = Path(__file__).resolve().parents[2] / "queries.sql"
     q2 = path.read_text().split("-- Q2:", 1)[1].split("\n", 1)[1].split(";", 1)[0]
     with seeded_database.cursor() as cursor:
+        cursor.execute(
+            "UPDATE purchases SET purchased_at='2026-11-23 08:01:00' "
+            "WHERE purchase_id=301"
+        )
+    seeded_database.commit()
+    with seeded_database.cursor() as cursor:
         cursor.execute(q2, {"client_id": CLIENT.user_id})
         rows = cursor.fetchall()
-    assert [row[0] for row in rows] == [308, 303, 301]
+    assert [row[0] for row in rows] == [301, 308, 303]
     assert rows == [
         tuple(vars(row).values())
         for row in booking.list_purchases(CLIENT, connect=db_factory)
@@ -92,5 +98,11 @@ def test_cli_history_and_empty_state(seeded_database, db_factory, monkeypatch, c
     monkeypatch.setattr(
         client, "list_purchases", partial(booking.list_purchases, connect=db_factory)
     )
-    assert "Purchase 301" in run(CLIENT)
+    lines = [line for line in run(CLIENT).splitlines() if line.startswith("Purchase ")]
+    assert [line.split()[1] for line in lines] == ["308", "303", "301"]
+    assert lines[-1] == (
+        "Purchase 301 (2026-11-23 08:00) | Screening 101: Fixture Movie 1 | "
+        "Theater 1 | 2026-11-24 10:00 | English | "
+        "5 tickets at EUR 15.00 each; total EUR 75.00 | Payment ****0202"
+    )
     assert "No purchases found." in run(Principal(17, "client"))

@@ -829,7 +829,10 @@ history service/Q2. GREEN: seven focused and 256 full-suite tests on isolated
 MySQL. Live CLI buy → masked history → deactivate → unchanged history passed.
 The Q2 artifact was executed with bound parameters and compared to the service.
 Implementation: `3221072`; PR #63. Three checkpoint reviews launched.
-Checkpoint review and CI before user merge; no auto-merge.
+Review follow-up: ordering now exercises conflicting timestamp/ID order and
+tied timestamps; CLI assertions check exact owned IDs and a complete masked
+receipt line. No runtime changes. Reverified 7 focused and 256 full tests,
+plus Ruff lint/format. CI before user merge; no auto-merge.
 
 ## C06 — Transaction checkpoint
 - [ ] **TODO · Owner D + all · Depends: C05, T16–T18**
