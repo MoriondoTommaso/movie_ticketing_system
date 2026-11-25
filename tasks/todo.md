@@ -802,6 +802,13 @@ Focused: 1 passed; full suite: 249 passed on isolated MySQL. Ruff lint/format,
 pip check, wheel build and whitespace passed. Checkpoint pending; user merges.
 Implementation: `aa0c87d`; PR #62. Three checkpoint reviews launched.
 
+**Review follow-up:** Bound worker and observer connector I/O at connection
+creation. If a worker misses its join deadline, a separate test-only connection
+terminates its session and the harness rejoins it, failing the test even when
+cleanup succeeds. Fixture cleanup does not close an active worker's connection.
+Confirmed same-account termination needs no new grants. Focused 1 and full 249
+passed again, plus Ruff and whitespace. No runtime changes; re-review pending.
+
 ## T18 — Show the client's captured purchase history
 - [ ] **TODO · M · Owner D, E query integration · Reviewer A · Depends: T15 · SC3, SC6**
 
