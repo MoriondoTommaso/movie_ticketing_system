@@ -3,6 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
+from src.analytics import revenue_by_movie
 from src.auth import Principal
 from src.database import (
     AuthorizationError,
@@ -93,12 +94,36 @@ def _show_view(principal: Principal, view: Literal["schedule", "capacity"]) -> N
         )
 
 
+def _show_movie_revenue(principal: Principal) -> None:
+    try:
+        raw = input("Minimum tickets (blank for 0): ").strip()
+        if raw and (not raw.isascii() or not raw.isdecimal()):
+            raise ValueError
+        rows = revenue_by_movie(principal, minimum_tickets=int(raw or "0"))
+    except (ValueError, ValidationError):
+        print("Enter a nonnegative whole number.")
+        return
+    except AuthorizationError:
+        print("Access denied.")
+        return
+    except DatabaseError:
+        print("Movie revenue is unavailable. Try again.")
+        return
+
+    print("Revenue by movie")
+    if not rows:
+        print("No movies meet the ticket threshold.")
+    for row in rows:
+        print(f"{row.title} | {row.tickets_sold} tickets | EUR {row.revenue:.2f}")
+
+
 def run(principal: Principal) -> None:
     """Run the administrator menu for the authenticated session."""
     print("Administrator menu")
     while True:
         choice = input(
-            "1. Add screening\n2. View schedule\n3. View remaining capacity\n0. Exit\nChoice: "
+            "1. Add screening\n2. View schedule\n3. View remaining capacity\n"
+            "4. View analytics (revenue by movie)\n0. Exit\nChoice: "
         ).strip()
         if choice == "0":
             return
@@ -108,5 +133,7 @@ def run(principal: Principal) -> None:
             _show_view(principal, "schedule")
         elif choice == "3":
             _show_view(principal, "capacity")
+        elif choice == "4":
+            _show_movie_revenue(principal)
         else:
-            print("Invalid choice. Enter 1, 2, 3 or 0.")
+            print("Invalid choice. Enter 1, 2, 3, 4 or 0.")
