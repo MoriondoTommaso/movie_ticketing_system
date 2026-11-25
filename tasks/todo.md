@@ -840,16 +840,23 @@ plus Ruff lint/format. CI before user merge; no auto-merge.
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; inspect rollback/last-seat evidence and explain why a search result is not an authoritative capacity check. Review failure cleanup and captured history together.
 
 ## T19 — Report revenue by movie
-- [ ] **TODO · M · Owner E, C adapter integration · Reviewer C · Depends: T06, T08 · SC7, SC10**
+- [ ] **IN REVIEW · M · Owner E, C adapter integration · Reviewer C · Depends: T06, T08 · SC7, SC10**
 
-**Files:** `src/analytics.py`, `src/admin.py`, `tests/integration/test_movie_revenue.py`.
+**Files:** `src/analytics.py`, `src/admin.py`, `tests/integration/test_movie_revenue.py`, `tests/unit/test_cli_auth.py` (approved prompt update).
 
 **Acceptance:**
-- [ ] Admin service/CLI returns movie ticket totals and captured revenue with deterministic tie-breaking and zero-sale movies included at the default threshold.
-- [ ] Bound minimum-tickets parameter defaults to zero and uses HAVING; invalid thresholds and client/nonprincipal direct calls fail.
-- [ ] Hand-calculated fixtures cover multiple screenings/purchases, zero sales and a nonzero threshold; totals cannot multiply through joins.
+- [x] Admin service/CLI returns movie ticket totals and captured revenue with deterministic tie-breaking and zero-sale movies included at the default threshold.
+- [x] Bound minimum-tickets parameter defaults to zero and uses HAVING; invalid thresholds and client/nonprincipal direct calls fail.
+- [x] Hand-calculated fixtures cover multiple screenings/purchases, zero sales and a nonzero threshold; totals cannot multiply through joins.
 
 **Verification:** `python -m pytest tests/integration/test_movie_revenue.py -q`; manual administrator analytics path via `python -m src.main`.
+
+**T19 evidence:** T06 and T08 are merged. RED: `src.analytics` missing.
+The user approved updating the exact menu expectation in `test_cli_auth.py`;
+all existing assertions were retained. GREEN: 22 focused and 266 full-suite
+tests on isolated MySQL. Live administrator CLI, Ruff lint/format, dependency
+check, wheel build, and whitespace passed. Implementation: `f4da3fb`.
+Checkpoint and CI before user merge.
 
 ## T20 — Report revenue by theater
 - [ ] **TODO · M · Owner E, C adapter integration · Reviewer C · Depends: T19 · SC7, SC10**
