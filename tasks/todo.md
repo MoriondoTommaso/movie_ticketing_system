@@ -763,7 +763,10 @@ deadlock. The write cursor now preserves the primary error and still rolls
 back on a close-only failure. Tests also cover rollback failure after a lost
 commit acknowledgement and receipt delivery after an acknowledged commit
 followed by a close failure. GREEN: 10 focused and 248 full-suite tests;
-Ruff, pip and whitespace checks passed. Re-review pending.
+Ruff, pip and whitespace checks passed. Follow-up: `9a366ed`. Checkpoint GO:
+correctness, security and test re-reviews found no blockers. Optional test
+hardening: assert that the double-fault cursor-close hook ran. T16 remains
+IN REVIEW until the user merges after green CI.
 
 ## T17 — Prove the exact last-seat contention outcome
 - [ ] **TODO · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
