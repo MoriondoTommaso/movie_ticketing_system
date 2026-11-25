@@ -9,6 +9,28 @@ from src.booking import book_tickets
 from src.database import CapacityError, DatabaseError, RetryableDatabaseError
 
 
+class _TrackedCursor:
+    """Observe cleanup at the caller boundary, regardless of connector backend."""
+
+    def __init__(self, cursor):
+        self.cursor = cursor
+        self.close = Mock(wraps=cursor.close)
+        self.exit = Mock(wraps=cursor.__exit__)
+
+    def __getattr__(self, name):
+        return getattr(self.cursor, name)
+
+    def __enter__(self):
+        self.cursor.__enter__()
+        return self
+
+    def __exit__(self, *exc):
+        return self.exit(*exc)
+
+    def assert_cleaned_up(self):
+        assert self.close.call_count + self.exit.call_count == 1
+
+
 @pytest.mark.parametrize("write_fails", [True, False])
 def test_write_cursor_close_failure(
     seeded_database, db_factory, monkeypatch, write_fails
@@ -84,10 +106,9 @@ def test_failed_write_rolls_back_and_releases_locks(
     cursors = []
 
     def cursor_factory(*args, **kwargs):
-        cursor = original(*args, **kwargs)
+        cursor = _TrackedCursor(original(*args, **kwargs))
         execute = cursor.execute
-        close = Mock(wraps=cursor.close)
-        cursors.append(close)
+        cursors.append(cursor)
 
         def execute_then_fail(sql, params=None):
             execute(sql, params)
@@ -97,7 +118,6 @@ def test_failed_write_rolls_back_and_releases_locks(
                 raise OperationalError("Injected write failure", errno=errno)
 
         monkeypatch.setattr(cursor, "execute", execute_then_fail)
-        monkeypatch.setattr(cursor, "close", close)
         return cursor
 
     monkeypatch.setattr(conn, "cursor", cursor_factory)
@@ -109,8 +129,8 @@ def test_failed_write_rolls_back_and_releases_locks(
     connect.assert_called_once()
     injected.assert_called_once()
     rollback.assert_called_once()
-    for close in cursors:
-        close.assert_called_once()
+    for cursor in cursors:
+        cursor.assert_cleaned_up()
     assert not conn.is_connected()
     assert _state(db_factory()) == (9, 2)
     retry = db_factory()
@@ -224,13 +244,11 @@ def test_validation_closes_cursor_and_connection(
 ):
     conn = db_factory()
     original = conn.cursor
-    closes = []
+    cursors = []
 
     def cursor_factory(*args, **kwargs):
-        cursor = original(*args, **kwargs)
-        close = Mock(wraps=cursor.close)
-        closes.append(close)
-        monkeypatch.setattr(cursor, "close", close)
+        cursor = _TrackedCursor(original(*args, **kwargs))
+        cursors.append(cursor)
         return cursor
 
     monkeypatch.setattr(conn, "cursor", cursor_factory)
@@ -245,9 +263,9 @@ def test_validation_closes_cursor_and_connection(
             connect=lambda: conn,
             clock=lambda: datetime(2026, 11, 23, 8, tzinfo=UTC),
         )
-    assert closes
-    for close in closes:
-        close.assert_called_once()
+    assert cursors
+    for cursor in cursors:
+        cursor.assert_cleaned_up()
     rollback.assert_called_once()
     assert not conn.is_connected()
     assert _state(db_factory()) == (9, 2)

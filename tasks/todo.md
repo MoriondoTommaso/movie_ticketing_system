@@ -768,6 +768,12 @@ correctness, security and test re-reviews found no blockers. Optional test
 hardening: assert that the double-fault cursor-close hook ran. T16 remains
 IN REVIEW until the user merges after green CI.
 
+**CI follow-up:** Linux CI reported four cursor-close spy failures. Tests now
+observe context-manager exit and explicit close at the caller boundary rather
+than relying on the connector to invoke a monkeypatched instance method.
+Cleanup assertions remain in place; no runtime changes. Full local suite:
+248 passed; Ruff lint/format passed. Final CI pending.
+
 ## T17 — Prove the exact last-seat contention outcome
 - [ ] **TODO · S · Owner D · Reviewer A · Depends: T16 · SC9, SC11**
 
