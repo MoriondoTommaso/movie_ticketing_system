@@ -1,13 +1,14 @@
 """Atomic purchases of tickets using synthetic payment methods."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager, suppress
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 from zoneinfo import ZoneInfo
 
 from mysql.connector import Error, errorcode
-from mysql.connector.abstracts import MySQLConnectionAbstract
+from mysql.connector.abstracts import MySQLConnectionAbstract, MySQLCursorAbstract
 
 from src import database
 from src.auth import Principal, require_role
@@ -22,6 +23,19 @@ from src.pricing import calculate_unit_price
 from src.screenings import lock_screening
 
 _ROME = ZoneInfo("Europe/Rome")
+
+
+@contextmanager
+def _write_cursor(conn: MySQLConnectionAbstract) -> Iterator[MySQLCursorAbstract]:
+    cursor = conn.cursor()
+    try:
+        yield cursor
+    except BaseException:
+        with suppress(Error):
+            cursor.close()
+        raise
+    else:
+        cursor.close()
 
 
 @dataclass(frozen=True)
@@ -67,7 +81,7 @@ def book_tickets(
                 screening.enhanced_sound,
             )
             total = unit_price * quantity
-            with conn.cursor() as cursor:
+            with _write_cursor(conn) as cursor:
                 cursor.execute(
                     "INSERT INTO purchases (client_id, screening_id, payment_method_id, "
                     "quantity, unit_price, total_amount, purchased_at) "
@@ -88,13 +102,28 @@ def book_tickets(
                     "WHERE screening_id = %s",
                     (quantity, screening.screening_id),
                 )
-            conn.commit()
-            return receipt
+            try:
+                conn.commit()
+            except Error as exc:
+                if exc.errno in (
+                    errorcode.ER_LOCK_WAIT_TIMEOUT,
+                    errorcode.ER_LOCK_DEADLOCK,
+                ):
+                    raise
+                raise DatabaseError(
+                    "Booking outcome is unknown. Check before trying again."
+                ) from exc
         except BaseException:
-            conn.rollback()
+            # Cleanup must not hide the reason for failure (including a lost ACK).
+            with suppress(Error):
+                conn.rollback()
+            with suppress(Error):
+                conn.close()
             raise
-        finally:
+        # A cleanup error cannot undo an acknowledged commit.
+        with suppress(Error):
             conn.close()
+        return receipt
     except Error as exc:
         if exc.errno in (errorcode.ER_LOCK_WAIT_TIMEOUT, errorcode.ER_LOCK_DEADLOCK):
             raise RetryableDatabaseError("Booking is busy. Try again.") from exc
