@@ -103,7 +103,8 @@ def test_menu_recovers_without_advertising_unimplemented_features(monkeypatch, c
     assert (
         prompts[1:]
         == [
-            "1. Add screening\n2. View schedule\n3. View remaining capacity\n0. Exit\nChoice: "
+            "1. Add screening\n2. View schedule\n3. View remaining capacity\n"
+            "4. View analytics (revenue by movie)\n0. Exit\nChoice: "
         ]
         * 2
     )
