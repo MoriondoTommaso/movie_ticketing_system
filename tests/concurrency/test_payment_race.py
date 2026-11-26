@@ -5,7 +5,7 @@ from threading import Event, Thread
 from time import monotonic
 
 import pytest
-from mysql.connector import connect
+from mysql.connector import Error, connect, errorcode
 
 from src import booking, payments
 from src.auth import Principal
@@ -125,11 +125,23 @@ def test_payment_race(seeded_database, database_settings, monkeypatch, booking_f
             for session_id, worker in workers:
                 worker.join(7)
                 if worker.is_alive():
-                    with observer.cursor() as cursor:
-                        cursor.execute("KILL CONNECTION %s", (session_id,))
-                    worker.join(7)
-                    forced.append((session_id, worker.is_alive()))
-            assert not forced, f"forced cleanup (session, still alive): {forced}"
+                    termination_error = None
+                    try:
+                        with observer.cursor() as cursor:
+                            cursor.execute("KILL CONNECTION %s", (session_id,))
+                    except Error as exc:
+                        termination_error = exc
+                    finally:
+                        worker.join(7)
+                    alive = worker.is_alive()
+                    if (
+                        termination_error is not None
+                        and termination_error.errno == errorcode.ER_NO_SUCH_THREAD
+                        and not alive
+                    ):
+                        continue
+                    forced.append((session_id, alive, termination_error))
+            assert not forced, f"forced cleanup (session, still alive, error): {forced}"
 
         receipt = winner.result()
         if booking_first:
