@@ -38,13 +38,12 @@ def test_theater_revenue_counts_committed_purchases_once(seeded_database, db_fac
         cursor.execute(
             "INSERT INTO purchases (client_id, screening_id, payment_method_id, "
             "quantity, unit_price, total_amount, purchased_at) "
-            "VALUES (11, 102, 201, 2, 13.25, 26.50, '2026-11-23 08:00:00')"
+            "VALUES (11, 102, 201, 2, 40.00, 80.00, '2026-11-23 08:00:00')"
         )
-        cursor.execute(
-            "UPDATE screenings SET sold_tickets = 6 WHERE screening_id = 102"
-        )
+    # Leave the screening counter untouched: this report counts purchases.
     seeded_database.commit()
-    expected[2] = (2, 6, Decimal("106.50"))
+    # Theater 2 now earns more than theater 1 despite selling fewer tickets.
+    expected[1:3] = [(2, 6, Decimal("160.00")), expected[1]]
     assert report() == expected
 
 

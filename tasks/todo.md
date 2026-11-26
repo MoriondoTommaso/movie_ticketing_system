@@ -877,6 +877,12 @@ on isolated MySQL. Live admin CLI, Ruff lint/format, dependency check, wheel
 build, and whitespace passed. Implementation: `0640ccd`. Checkpoint and CI
 before user merge.
 
+**PR #65 checkpoint:** Correctness and security reviews found no blockers.
+The test review identified an ordering gap. The committed-purchase fixture
+now makes revenue and ticket rankings disagree and leaves the screening
+counter unchanged to verify the report counts purchases. No runtime changes.
+Reverified: 18 focused and 272 full MySQL tests, Ruff, and whitespace.
+
 ## T21 — Report weighted occupancy by movie
 - [ ] **TODO · M · Owner E, C adapter integration · Reviewer C · Depends: T20 · SC7, SC10**
 
