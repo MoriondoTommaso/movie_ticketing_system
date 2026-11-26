@@ -859,16 +859,23 @@ check, wheel build, and whitespace passed. Implementation: `f4da3fb`.
 Checkpoint and CI before user merge.
 
 ## T20 — Report revenue by theater
-- [ ] **TODO · M · Owner E, C adapter integration · Reviewer C · Depends: T19 · SC7, SC10**
+- [ ] **IN REVIEW · M · Owner E, C adapter integration · Reviewer C · Depends: T19 · SC7, SC10**
 
-**Files:** `src/analytics.py`, `src/admin.py`, `tests/integration/test_theater_revenue.py`.
+**Files:** `src/analytics.py`, `src/admin.py`, `tests/integration/test_theater_revenue.py`, `tests/unit/test_cli_auth.py` (approved prompt update).
 
 **Acceptance:**
-- [ ] Admin service/CLI returns theater ticket totals and captured revenue, including zero-sale theaters with deterministic ordering and exact Decimal amounts.
-- [ ] Multiple screenings and purchases match hand-calculated totals without double counting; role and database-error behavior follow the existing report contract.
-- [ ] A committed additional purchase inserted by the controlled report fixture changes the totals exactly once; captured totals, not current pricing inputs, drive revenue. Live booking-service reconciliation is separately required at C07 and T25.
+- [x] Admin service/CLI returns theater ticket totals and captured revenue, including zero-sale theaters with deterministic ordering and exact Decimal amounts.
+- [x] Multiple screenings and purchases match hand-calculated totals without double counting; role and database-error behavior follow the existing report contract.
+- [x] A committed additional purchase inserted by the controlled report fixture changes the totals exactly once; captured totals, not current pricing inputs, drive revenue. Live booking-service reconciliation is separately required at C07 and T25.
 
 **Verification:** `python -m pytest tests/integration/test_theater_revenue.py -q`; manual report via `python -m src.main`. This task can fully pass without T15; C07 and T25 own the subsequent cross-service check.
+
+**T20 evidence:** T19 merged at `93389f6`. RED on MySQL: missing
+`revenue_by_theater`. The user approved updating the exact admin prompt test;
+its assertions remain intact. GREEN: 18 focused tests and 272 full-suite tests
+on isolated MySQL. Live admin CLI, Ruff lint/format, dependency check, wheel
+build, and whitespace passed. Implementation: `0640ccd`. Checkpoint and CI
+before user merge.
 
 ## T21 — Report weighted occupancy by movie
 - [ ] **TODO · M · Owner E, C adapter integration · Reviewer C · Depends: T20 · SC7, SC10**
