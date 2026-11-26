@@ -912,16 +912,28 @@ changes. Equal-capacity fixture and CLI error-path coverage are optional.
 **Acceptance/verification:** `python -m pytest -q`, plan Ruff commands, `git diff --check`; make a purchase and independently reconcile all three reports, capacity and history. Resolve any arithmetic discrepancy before expanding the query artifact.
 
 ## T22 — Prove concurrent schedule creation cannot overlap
-- [ ] **TODO · S · Owner C · Reviewer D · Depends: T13 · SC7, SC11**
+- [ ] **IN REVIEW · S · Owner C · Reviewer D · Depends: T13 · SC7, SC11**
 
 **Files:** `tests/concurrency/test_schedule_race.py`, `src/screenings.py` (only necessary race fixes/seams).
 
 **Acceptance:**
-- [ ] Independent transactions contend for one theater with overlapping proposed intervals; synchronization proves overlap in execution and exactly one screening is stored.
-- [ ] Back-to-back intervals both succeed, and different theaters do not cause false overlap rejection; tests expose stale-snapshot behavior under REPEATABLE READ.
-- [ ] Bounded waits and cleanup prevent hangs; a failed contender releases its resources and a later valid creation succeeds.
+- [x] Independent transactions contend for one theater with overlapping proposed intervals; synchronization proves overlap in execution and exactly one screening is stored.
+- [x] Back-to-back intervals both succeed, and different theaters do not cause false overlap rejection; tests expose stale-snapshot behavior under REPEATABLE READ.
+- [x] Bounded waits and cleanup prevent hangs; a failed contender releases its resources and a later valid creation succeeds.
 
 **Verification:** `python -m pytest tests/concurrency/test_schedule_race.py -q`; review theater-lock acquisition and current-read ordering against SPEC P11.
+
+**T22 evidence:** T13 is merged (`d28b51d`). RED negative control: removing
+the overlap current read in memory let both overlapping requests succeed.
+GREEN with unchanged production code: 3 focused and 280 full MySQL tests.
+Ruff lint/format, dependency check, wheel build, and whitespace passed.
+Implementation: `2e6622f`. Checkpoint and CI before user merge.
+
+**PR #67 checkpoint:** Correctness and security found no blockers. Review
+follow-up explicitly sets and verifies `REPEATABLE READ` on both race
+sessions. MySQL: 3 focused and 280 full-suite tests passed; Ruff and
+whitespace passed. The observer saw the contender's locking SQL, not a
+separately measured InnoDB wait edge. No production changes.
 
 ## T23 — Prove booking/payment deactivation ordering
 - [ ] **TODO · M · Owner B + D · Reviewer E · Depends: T10, T15 · SC6, SC8, SC11**
