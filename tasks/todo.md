@@ -884,14 +884,20 @@ counter unchanged to verify the report counts purchases. No runtime changes.
 Reverified: 18 focused and 272 full MySQL tests, Ruff, and whitespace.
 
 ## T21 — Report weighted occupancy by movie
-- [ ] **TODO · M · Owner E, C adapter integration · Reviewer C · Depends: T20 · SC7, SC10**
+- [ ] **IN REVIEW · M · Owner E, C adapter integration · Reviewer C · Depends: T20 · SC7, SC10**
 
-**Files:** `src/analytics.py`, `src/admin.py`, `tests/integration/test_occupancy.py`.
+**Files:** `src/analytics.py`, `src/admin.py`, `tests/integration/test_occupancy.py`, `tests/unit/test_cli_auth.py` (approved prompt update).
 
 **Acceptance:**
-- [ ] Return sold tickets, offered seats and percentage across all scheduled screenings, pre-aggregating purchases per screening so capacities are counted once.
-- [ ] Distinct-capacity/multi-purchase fixtures prove weighted occupancy rather than average percentages; zero-sale screenings yield zero and movies with no screenings yield N/A.
-- [ ] Admin-only CLI formats results consistently and ordering is deterministic; no division-by-zero or float-money substitutions.
+- [x] Return sold tickets, offered seats and percentage across all scheduled screenings, pre-aggregating purchases per screening so capacities are counted once.
+- [x] Distinct-capacity/multi-purchase fixtures prove weighted occupancy rather than average percentages; zero-sale screenings yield zero and movies with no screenings yield N/A.
+- [x] Admin-only CLI formats results consistently and ordering is deterministic; no division-by-zero or float-money substitutions.
+
+**T21 evidence:** T20 merged at `f1f67f8`. Approved exact menu prompt update
+retains the existing assertions. RED: five cases failed on missing
+`occupancy_by_movie`. GREEN: 17 focused and 277 full-suite MySQL tests.
+Live admin CLI, Ruff lint/format, dependency check, wheel build and whitespace
+passed. Implementation: `e028268`. Checkpoint and CI before user merge.
 
 **Verification:** `python -m pytest tests/integration/test_occupancy.py -q`; manually compare displayed results to the fixture arithmetic via `python -m src.main`.
 
