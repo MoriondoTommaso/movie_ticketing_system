@@ -30,6 +30,21 @@ def test_schedule_race(seeded_database, database_settings, theater, minute, over
             write_timeout=5,
         )
 
+    def participant():
+        conn = session()
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ"
+                )
+                cursor.execute("SELECT @@session.transaction_isolation")
+                assert cursor.fetchone() == ("REPEATABLE-READ",)
+                cursor.execute("SET SESSION innodb_lock_wait_timeout=4")
+            return conn
+        except BaseException:
+            conn.close()
+            raise
+
     now = datetime(2026, 11, 23, 8, tzinfo=UTC)
     start = datetime(2026, 12, 1, 10)
     contender_start = start.replace(hour=10 + minute // 60, minute=minute % 60)
@@ -40,13 +55,8 @@ def test_schedule_race(seeded_database, database_settings, theater, minute, over
     def contend():
         nonlocal worker_id
         try:
-            with session() as conn:
+            with participant() as conn:
                 worker_id = conn.connection_id
-                with conn.cursor() as cursor:
-                    cursor.execute(
-                        "SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ"
-                    )
-                    cursor.execute("SET SESSION innodb_lock_wait_timeout=4")
                 ready.set()
                 screening_id = create_screening(
                     admin,
@@ -85,7 +95,7 @@ def test_schedule_race(seeded_database, database_settings, theater, minute, over
 
     try:
         winner = create_screening(
-            admin, 1, 1, 2, start, clock=winner_clock, connect=session
+            admin, 1, 1, 2, start, clock=winner_clock, connect=participant
         )
     finally:
         if worker.ident is not None:

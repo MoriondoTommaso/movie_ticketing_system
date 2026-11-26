@@ -929,6 +929,12 @@ GREEN with unchanged production code: 3 focused and 280 full MySQL tests.
 Ruff lint/format, dependency check, wheel build, and whitespace passed.
 Implementation: `2e6622f`. Checkpoint and CI before user merge.
 
+**PR #67 checkpoint:** Correctness and security found no blockers. Review
+follow-up explicitly sets and verifies `REPEATABLE READ` on both race
+sessions. MySQL: 3 focused and 280 full-suite tests passed; Ruff and
+whitespace passed. The observer saw the contender's locking SQL, not a
+separately measured InnoDB wait edge. No production changes.
+
 ## T23 — Prove booking/payment deactivation ordering
 - [ ] **TODO · M · Owner B + D · Reviewer E · Depends: T10, T15 · SC6, SC8, SC11**
 
