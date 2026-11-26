@@ -101,3 +101,55 @@ def revenue_by_theater(
                 conn.close()
     except Error as exc:
         raise DatabaseError("Theater revenue is unavailable.") from exc
+
+
+_MOVIE_OCCUPANCY = """
+SELECT m.movie_id, m.title, COALESCE(SUM(p.tickets), 0),
+       COALESCE(SUM(t.capacity), 0),
+       ROUND(100.00 * COALESCE(SUM(p.tickets), 0) / NULLIF(SUM(t.capacity), 0), 2)
+FROM movies m
+LEFT JOIN screenings s ON s.movie_id = m.movie_id
+LEFT JOIN theaters t ON t.theater_id = s.theater_id
+LEFT JOIN (
+    SELECT screening_id, SUM(quantity) AS tickets
+    FROM purchases
+    GROUP BY screening_id
+) p ON p.screening_id = s.screening_id
+GROUP BY m.movie_id, m.title
+ORDER BY m.movie_id ASC
+"""
+
+
+@dataclass(frozen=True)
+class MovieOccupancy:
+    movie_id: int
+    title: str
+    tickets_sold: int
+    offered_seats: int
+    occupancy_percent: Decimal | None
+
+
+def occupancy_by_movie(
+    principal: Principal,
+    *,
+    connect: Callable[[], MySQLConnectionAbstract] = database.connect,
+) -> list[MovieOccupancy]:
+    """Report purchased tickets as a share of all offered seats per movie."""
+    require_role(principal, "admin")
+    try:
+        conn = connect()
+        try:
+            database.verify_principal(conn, principal, "admin")
+            with conn.cursor() as cursor:
+                cursor.execute(_MOVIE_OCCUPANCY)
+                return [
+                    MovieOccupancy(movie_id, title, int(sold), int(offered), percent)
+                    for movie_id, title, sold, offered, percent in cursor.fetchall()
+                ]
+        finally:
+            try:
+                conn.rollback()
+            finally:
+                conn.close()
+    except Error as exc:
+        raise DatabaseError("Movie occupancy is unavailable.") from exc

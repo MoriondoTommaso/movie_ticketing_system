@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from src.analytics import revenue_by_movie, revenue_by_theater
+from src.analytics import occupancy_by_movie, revenue_by_movie, revenue_by_theater
 from src.auth import Principal
 from src.database import (
     AuthorizationError,
@@ -136,13 +136,34 @@ def _show_theater_revenue(principal: Principal) -> None:
         )
 
 
+def _show_movie_occupancy(principal: Principal) -> None:
+    try:
+        rows = occupancy_by_movie(principal)
+    except AuthorizationError:
+        print("Access denied.")
+        return
+    except DatabaseError:
+        print("Movie occupancy is unavailable. Try again.")
+        return
+
+    print("Occupancy by movie")
+    if not rows:
+        print("No movies found.")
+    for row in rows:
+        percent = (
+            "N/A" if row.occupancy_percent is None else f"{row.occupancy_percent:.2f}%"
+        )
+        print(f"{row.title} | {row.tickets_sold}/{row.offered_seats} seats | {percent}")
+
+
 def run(principal: Principal) -> None:
     """Run the administrator menu for the authenticated session."""
     print("Administrator menu")
     while True:
         choice = input(
             "1. Add screening\n2. View schedule\n3. View remaining capacity\n"
-            "4. View analytics (revenue by movie)\n5. View revenue by theater\n0. Exit\nChoice: "
+            "4. View analytics (revenue by movie)\n5. View revenue by theater\n"
+            "6. View occupancy by movie\n0. Exit\nChoice: "
         ).strip()
         if choice == "0":
             return
@@ -156,5 +177,7 @@ def run(principal: Principal) -> None:
             _show_movie_revenue(principal)
         elif choice == "5":
             _show_theater_revenue(principal)
+        elif choice == "6":
+            _show_movie_occupancy(principal)
         else:
-            print("Invalid choice. Enter 1, 2, 3, 4, 5 or 0.")
+            print("Invalid choice. Enter 1, 2, 3, 4, 5, 6 or 0.")
