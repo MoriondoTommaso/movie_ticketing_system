@@ -936,16 +936,22 @@ whitespace passed. The observer saw the contender's locking SQL, not a
 separately measured InnoDB wait edge. No production changes.
 
 ## T23 — Prove booking/payment deactivation ordering
-- [ ] **TODO · M · Owner B + D · Reviewer E · Depends: T10, T15 · SC6, SC8, SC11**
+- [ ] **IN REVIEW · M · Owner B + D · Reviewer E · Depends: T10, T15 · SC6, SC8, SC11**
 
 **Files:** `tests/concurrency/test_payment_race.py`, `src/payments.py`, `src/booking.py` (only necessary race fixes/seams).
 
 **Acceptance:**
-- [ ] With independent connections and bounded synchronization, booking obtaining the payment lock first commits before deactivation; the purchase reference survives.
-- [ ] Deactivation obtaining the payment lock first causes the waiting booking to reject the inactive method, leaving no purchase/counter change.
-- [ ] Lock order remains screening→payment for booking; foreign ownership remains rejected and both orderings clean up workers/transactions on failure.
+- [x] With independent connections and bounded synchronization, booking obtaining the payment lock first commits before deactivation; the purchase reference survives.
+- [x] Deactivation obtaining the payment lock first causes the waiting booking to reject the inactive method, leaving no purchase/counter change.
+- [x] Lock order remains screening→payment for booking; foreign ownership remains rejected and both orderings clean up workers/transactions on failure.
 
 **Verification:** `python -m pytest tests/concurrency/test_payment_race.py -q` plus the affected payment/booking integration files after any service fix.
+
+**T23 evidence:** T10 (`a5b5487`) and T15 (`65d07c2`) are merged. In-memory
+negative control bypassing active-method validation made the deactivation-first
+case fail (`DID NOT RAISE`). Production unchanged: 3 focused and 283 full MySQL
+tests passed. Ruff, dependency check, wheel build and whitespace passed.
+Implementation: `9b84e99`. Checkpoint and CI before user merge.
 
 ## T24 — Complete and execute the five-query submission artifact
 - [ ] **TODO · M · Owner E · Reviewer C · Depends: T11, T18, T21 · SC3, SC10**
