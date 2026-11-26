@@ -13,7 +13,16 @@ ADMIN = Principal(1, "admin")
 def test_occupancy_weights_capacity_without_purchase_fanout(
     seeded_database, db_factory
 ):
+    with seeded_database.cursor() as cursor:
+        cursor.execute("UPDATE movies SET title = 'Zulu' WHERE movie_id = 1")
+        cursor.execute("UPDATE movies SET title = 'Alpha' WHERE movie_id = 2")
+    seeded_database.commit()
+
     rows = analytics.occupancy_by_movie(ADMIN, connect=db_factory)
+    assert [row.title for row in rows[:2]] == ["Zulu", "Alpha"]
+    assert all(
+        type(r.tickets_sold) is int and type(r.offered_seats) is int for r in rows
+    )
     assert [
         (r.movie_id, r.tickets_sold, r.offered_seats, r.occupancy_percent) for r in rows
     ] == [

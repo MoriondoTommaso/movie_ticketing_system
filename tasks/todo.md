@@ -899,6 +899,11 @@ retains the existing assertions. RED: five cases failed on missing
 Live admin CLI, Ruff lint/format, dependency check, wheel build and whitespace
 passed. Implementation: `e028268`. Checkpoint and CI before user merge.
 
+**PR #66 checkpoint:** Correctness and security found no blockers. Test
+follow-up distinguishes ID ordering from title ordering and checks integer
+counts. Five focused MySQL tests, Ruff, and whitespace passed; no runtime
+changes. Equal-capacity fixture and CLI error-path coverage are optional.
+
 **Verification:** `python -m pytest tests/integration/test_occupancy.py -q`; manually compare displayed results to the fixture arithmetic via `python -m src.main`.
 
 ## C07 — Analytics checkpoint
